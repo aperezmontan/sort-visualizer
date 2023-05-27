@@ -1,0 +1,10 @@
+body {
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: black;
+}
+
+#visualizer {
+  display: flex;
+  flex-direction: column;
+}
