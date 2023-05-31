@@ -23,7 +23,6 @@ export default class Visualizer {
                 this.bars.forEach((bar, index) => {
                     const { heightPercentOfViewport } = bar;
                     // Create the bar div element
-                    // console.log("Bar height", height)
                     const domElement = document.createElement('div');
                     domElement.className = "bar";
                     // Let's make this a tooltip because text doesn't look great at this pixel width
@@ -86,10 +85,8 @@ export default class Visualizer {
             rightArrayIndex = 0;
             // // Sort bars by left and right arrays
             for (let currentIndex = startingIndex; currentIndex <= endingIndex; currentIndex++) {
-                // debugger
                 // Ensure that the indexes are in range
                 if ((leftArrayIndex < leftArraySize) && (rightArrayIndex < rightArraySize)) {
-                    // debugger
                     // If they are, assign the correct bar
                     if (leftArray[leftArrayIndex].height < rightArray[rightArrayIndex].height) {
                         this.bars[currentIndex] = leftArray[leftArrayIndex];
@@ -127,7 +124,7 @@ export default class Visualizer {
             const pivot = bars[endingIndex];
             let i = startingIndex - 1;
             for (let currentIndex = startingIndex; currentIndex <= endingIndex - 1; currentIndex++) {
-                if (bars[currentIndex].domElement.style.height < pivot.domElement.style.height) {
+                if (bars[currentIndex].height < pivot.height) {
                     i++;
                     this.switchBars({ bars: this.bars, i, j: currentIndex });
                 }
