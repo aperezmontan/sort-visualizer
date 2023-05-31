@@ -2,6 +2,14 @@ import Visualizer from "./visualizer.js";
 
 let visualizer: Visualizer | null = null;
 
+const bubbleSort = (): void => {
+  if (visualizer) {
+    visualizer.bubbleSort();
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
 const debounce = (callback: Function, delay: number = 300): Function => {
   let timeout: ReturnType<typeof setTimeout>;
 
@@ -83,5 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
   visualizer = setVisualizer();
 });
 document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
+document.getElementById('bubble-sort')?.addEventListener("click", () => bubbleSort());
 document.getElementById('quick-sort')?.addEventListener("click", () => quickSort());
 document.getElementById('selection-sort')?.addEventListener("click", () => selectionSort());

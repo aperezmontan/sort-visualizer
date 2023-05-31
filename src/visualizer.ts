@@ -85,6 +85,28 @@ export default class Visualizer {
     return Math.floor(Math.random() * (max - min) + min);
   }
 
+  bubbleSort = (): void => {
+    const numberOfBars = this.bars.length;
+
+    // The unsortedCount is the length of the part of the array that's not yet sorted
+    let unsortedCount = numberOfBars - 1;
+
+    // The unsortedCount just keeps track of which iteration we're on
+    while (unsortedCount > 0) {
+
+      // The index is what's really in charge of the manipulation
+      for (let index = 0; index < unsortedCount; index++) {
+        const nextIndex = index + 1;
+
+        if (this.bars[index].height > this.bars[nextIndex].height) {
+          this.switchBars({ bars: this.bars, i: index, j: nextIndex })
+        }
+      }
+
+      unsortedCount--;
+    }
+  }
+
   delay = (currentIndex: number, minIndex: number): void => {
 
   }
@@ -106,6 +128,7 @@ export default class Visualizer {
     return i;
   }
 
+  // TODO: Fix this algo
   quickSort = ({ bars, startingIndex, endingIndex }: QuicksortParamsType = { bars: this.bars, startingIndex: 0, endingIndex: this.bars.length - 1 }): void => {
     // Base case. Nothing left to do here
     if (endingIndex <= startingIndex) return;
@@ -137,7 +160,7 @@ export default class Visualizer {
   }
 
   setMaxBars = ({ maxBars }: { maxBars: number }): void => {
-    this.maxBars = 20;
+    this.maxBars = maxBars;
   }
 
   styler = (element: HTMLDivElement, style: StyleType): HTMLDivElement => {

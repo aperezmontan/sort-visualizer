@@ -1,6 +1,14 @@
-var _a, _b, _c;
+var _a, _b, _c, _d;
 import Visualizer from "./visualizer.js";
 let visualizer = null;
+const bubbleSort = () => {
+    if (visualizer) {
+        visualizer.bubbleSort();
+    }
+    else {
+        alert("Visualizer is null");
+    }
+};
 const debounce = (callback, delay = 300) => {
     let timeout;
     return (...args) => {
@@ -72,5 +80,6 @@ document.addEventListener("DOMContentLoaded", () => {
     visualizer = setVisualizer();
 });
 (_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
-(_b = document.getElementById('quick-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => quickSort());
-(_c = document.getElementById('selection-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => selectionSort());
+(_b = document.getElementById('bubble-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => bubbleSort());
+(_c = document.getElementById('quick-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => quickSort());
+(_d = document.getElementById('selection-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => selectionSort());
