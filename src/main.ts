@@ -15,6 +15,7 @@ const debounce = (callback: Function, delay: number = 300): Function => {
 
   return (...args: any[]) => {
     clearTimeout(timeout);
+    // debugger
     timeout = setTimeout(() => callback.apply(args), delay);
   };
 };
@@ -55,7 +56,7 @@ const selectionSort = (): void => {
 const setMaxBars = () => {
   const width = window.innerWidth;
   const maxBars = Math.floor(width / 5);
-
+  console.log("setting max bars")
   if (visualizer) {
     visualizer.setMaxBars({ maxBars });
     writeMetric({ metric: width, metricClassName: "window-width", metricTitle: "Width" });
@@ -73,6 +74,20 @@ const setVisualizer = (): Visualizer => {
   return visualizer;
 }
 
+const slider = () => {
+  // TODO: Not sure how else to do this. Debounce won't pass event 
+  // into this function. See if you can improve
+  const value = parseInt(document.getElementById('sort-speed').value)
+  const sortSpeed = Math.floor(1000 - (value / 100) * 1000);
+
+  console.log("setting sort speed to", sortSpeed)
+  if (visualizer) {
+    visualizer.setSortSpeed({ sortSpeed });
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number | null, metricClassName: string, metricTitle: string }): void => {
   if (metric) {
@@ -87,12 +102,28 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
   }
 }
 
+// const handleOnChange = (onChange) => (e) => {
+//   console.log(e.target);
+//   console.log(onChange);
+//   // e.persist();
+//   // debouncedOnChange(() => onChange(e));
+//   debounce(setMaxBars, 250)
+// };
+
 // Attach functions to the DOM 
 window.addEventListener(
   "resize",
   // TODO: Look into this error
-  debounce(() => setMaxBars(), 250)
+  debounce(setMaxBars, 250)
 );
+
+// const delayHandler = debounce((value) => slider(value), 250);
+
+// const handleChange = e => {
+//   const { value } = e.target;
+//   console.log("value", value)
+//   delayHandler(value);
+// };
 
 document.addEventListener("DOMContentLoaded", () => {
   visualizer = setVisualizer();
@@ -102,3 +133,8 @@ document.getElementById('bubble-sort')?.addEventListener("click", () => bubbleSo
 document.getElementById('merge-sort')?.addEventListener("click", () => mergeSort());
 document.getElementById('quick-sort')?.addEventListener("click", () => quickSort());
 document.getElementById('selection-sort')?.addEventListener("click", () => selectionSort());
+// const foo = (e) => debounce(slider(e), 250)
+document.getElementById('sort-speed')?.addEventListener(
+  "input",
+  debounce(slider, 250)
+);

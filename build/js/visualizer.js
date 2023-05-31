@@ -1,15 +1,36 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 export default class Visualizer {
     constructor({ maxBars, styleObj, visualizerContainerQuery }) {
         this.bars = [];
-        this.getRandomBarValues = () => {
-            return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x) => {
-                const height = this.getRandomNumberBetween(1, this.maxBars);
-                const heightPercentOfViewport = height / this.maxBars * 100;
-                return {
-                    domElement: null,
-                    height,
-                    heightPercentOfViewport
-                };
+        this.bubbleSort = () => __awaiter(this, void 0, void 0, function* () {
+            const numberOfBars = this.bars.length;
+            // The unsortedCount is the length of the part of the array that's not yet sorted
+            let unsortedCount = numberOfBars - 1;
+            // The unsortedCount just keeps track of which iteration we're on
+            while (unsortedCount > 0) {
+                // The index is what's really in charge of the manipulation
+                for (let index = 0; index < unsortedCount; index++) {
+                    const nextIndex = index + 1;
+                    this.setCurrentBarColor({ index: nextIndex, color: "red" });
+                    if (this.bars[index].height > this.bars[nextIndex].height) {
+                        yield this.switchBars({ bars: this.bars, i: index, j: nextIndex });
+                    }
+                    this.setCurrentBarColor({ index: nextIndex, color: "white" });
+                }
+                unsortedCount--;
+            }
+        });
+        this.delay = () => {
+            return new Promise(resolve => {
+                setTimeout(() => resolve(''), this.sortSpeed);
             });
         };
         this.generateBars = () => {
@@ -39,26 +60,19 @@ export default class Visualizer {
             }
             return null;
         };
+        this.getRandomBarValues = () => {
+            return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x) => {
+                const height = this.getRandomNumberBetween(1, this.maxBars);
+                const heightPercentOfViewport = height / this.maxBars * 100;
+                return {
+                    domElement: null,
+                    height,
+                    heightPercentOfViewport
+                };
+            });
+        };
         this.getRandomNumberBetween = (min, max) => {
             return Math.floor(Math.random() * (max - min) + min);
-        };
-        this.bubbleSort = () => {
-            const numberOfBars = this.bars.length;
-            // The unsortedCount is the length of the part of the array that's not yet sorted
-            let unsortedCount = numberOfBars - 1;
-            // The unsortedCount just keeps track of which iteration we're on
-            while (unsortedCount > 0) {
-                // The index is what's really in charge of the manipulation
-                for (let index = 0; index < unsortedCount; index++) {
-                    const nextIndex = index + 1;
-                    if (this.bars[index].height > this.bars[nextIndex].height) {
-                        this.switchBars({ bars: this.bars, i: index, j: nextIndex });
-                    }
-                }
-                unsortedCount--;
-            }
-        };
-        this.delay = (currentIndex, minIndex) => {
         };
         // TODO: see if we can clean this up at all
         this.merge = ({ startingIndex, pivot, endingIndex }) => {
@@ -120,19 +134,23 @@ export default class Visualizer {
             this.mergeSort({ startingIndex: pivot + 1, endingIndex });
             this.merge({ startingIndex, pivot, endingIndex });
         };
-        this.partition = ({ bars, startingIndex, endingIndex }) => {
+        this.partition = ({ bars, startingIndex, endingIndex }) => __awaiter(this, void 0, void 0, function* () {
             const pivot = bars[endingIndex];
             let i = startingIndex - 1;
             for (let currentIndex = startingIndex; currentIndex <= endingIndex - 1; currentIndex++) {
+                this.setCurrentBarColor({ index: currentIndex, color: "red" });
                 if (bars[currentIndex].height < pivot.height) {
                     i++;
-                    this.switchBars({ bars: this.bars, i, j: currentIndex });
+                    yield this.switchBars({ bars: this.bars, i, j: currentIndex });
                 }
+                this.setCurrentBarColor({ index: currentIndex, color: "white" });
             }
             i++;
-            this.switchBars({ bars, i, j: endingIndex });
+            this.setCurrentBarColor({ index: endingIndex, color: "red" });
+            yield this.switchBars({ bars, i, j: endingIndex });
+            this.setCurrentBarColor({ index: endingIndex, color: "white" });
             return i;
-        };
+        });
         // TODO: Fix this algo
         this.quickSort = ({ bars, startingIndex, endingIndex } = { bars: this.bars, startingIndex: 0, endingIndex: this.bars.length - 1 }) => {
             // Base case. Nothing left to do here
@@ -142,24 +160,30 @@ export default class Visualizer {
             this.quickSort({ bars, startingIndex, endingIndex: pivot - 1 });
             this.quickSort({ bars, startingIndex: pivot + 1, endingIndex });
         };
-        this.selectionSort = () => {
+        this.setCurrentBarColor = ({ bars = this.bars, index, color }) => {
+            const currentBarElement = bars[index].domElement;
+            currentBarElement.style.backgroundColor = color;
+        };
+        this.selectionSort = () => __awaiter(this, void 0, void 0, function* () {
             const numberOfBars = this.bars.length;
             for (let currentIndex = 0; currentIndex < numberOfBars; currentIndex++) {
                 let minIndex = currentIndex;
-                const currentBarElement = this.bars[currentIndex].domElement;
-                currentBarElement.style.backgroundColor = "red";
+                this.setCurrentBarColor({ index: currentIndex, color: "red" });
                 // Find the shortest bar in the unsorted array
                 for (let unsortedIndex = currentIndex + 1; unsortedIndex < numberOfBars; unsortedIndex++) {
                     if (this.bars[unsortedIndex].height < this.bars[minIndex].height) {
                         minIndex = unsortedIndex;
                     }
                 }
-                this.switchBars({ bars: this.bars, i: currentIndex, j: minIndex });
-                currentBarElement.style.backgroundColor = "white";
+                yield this.switchBars({ bars: this.bars, i: currentIndex, j: minIndex });
+                this.setCurrentBarColor({ index: currentIndex, color: "white" });
             }
-        };
+        });
         this.setMaxBars = ({ maxBars }) => {
             this.maxBars = maxBars;
+        };
+        this.setSortSpeed = ({ sortSpeed }) => {
+            this.sortSpeed = sortSpeed;
         };
         this.styler = (element, style) => {
             for (const styleProperty in style) {
@@ -168,16 +192,18 @@ export default class Visualizer {
             }
             return element;
         };
-        this.switchBars = ({ bars, i, j }) => {
+        this.switchBars = ({ bars, i, j }) => __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             const tempOrder = (_a = bars[i].domElement) === null || _a === void 0 ? void 0 : _a.style.order;
             (_b = bars[i].domElement) === null || _b === void 0 ? void 0 : _b.style.order = bars[j].domElement.style.order;
             bars[j].domElement.style.order = tempOrder;
+            yield this.delay();
             const temp = bars[i];
             bars[i] = bars[j];
             bars[j] = temp;
-        };
+        });
         this.maxBars = maxBars || 0;
+        this.sortSpeed = 100;
         this.visualizerContainerQuery = visualizerContainerQuery;
         this.styleObj = styleObj || {
             'background-color': 'blue',

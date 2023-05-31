@@ -18,10 +18,12 @@ export default class Visualizer {
   bars: BarType[] = [];
   maxBars: number;
   styleObj: StyleType;
+  sortSpeed: number;
   visualizerContainerQuery: HTMLCollectionOf<Element>;
 
   constructor({ maxBars, styleObj, visualizerContainerQuery }: { maxBars?: number, styleObj?: StyleType, visualizerContainerQuery: HTMLCollectionOf<Element> }) {
     this.maxBars = maxBars || 0;
+    this.sortSpeed = 100;
     this.visualizerContainerQuery = visualizerContainerQuery;
     this.styleObj = styleObj || {
       'background-color': 'blue',
@@ -29,17 +31,36 @@ export default class Visualizer {
     }
   }
 
-  getRandomBarValues = (): BarType[] => {
-    return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x) => {
-      const height = this.getRandomNumberBetween(1, this.maxBars);
-      const heightPercentOfViewport = height / this.maxBars * 100;
+  bubbleSort = async (): Promise<void> => {
+    const numberOfBars = this.bars.length;
 
-      return {
-        domElement: null,
-        height,
-        heightPercentOfViewport
+    // The unsortedCount is the length of the part of the array that's not yet sorted
+    let unsortedCount = numberOfBars - 1;
+
+    // The unsortedCount just keeps track of which iteration we're on
+    while (unsortedCount > 0) {
+
+      // The index is what's really in charge of the manipulation
+      for (let index = 0; index < unsortedCount; index++) {
+        const nextIndex = index + 1;
+
+        this.setCurrentBarColor({ index: nextIndex, color: "red" })
+
+        if (this.bars[index].height > this.bars[nextIndex].height) {
+          await this.switchBars({ bars: this.bars, i: index, j: nextIndex })
+        }
+
+        this.setCurrentBarColor({ index: nextIndex, color: "white" })
       }
-    });
+
+      unsortedCount--;
+    }
+  }
+
+  delay = (): Promise<TimerHandler> => {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(''), this.sortSpeed);
+    })
   }
 
   generateBars = (): number | null => {
@@ -81,34 +102,21 @@ export default class Visualizer {
     return null;
   }
 
+  getRandomBarValues = (): BarType[] => {
+    return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x) => {
+      const height = this.getRandomNumberBetween(1, this.maxBars);
+      const heightPercentOfViewport = height / this.maxBars * 100;
+
+      return {
+        domElement: null,
+        height,
+        heightPercentOfViewport
+      }
+    });
+  }
+
   getRandomNumberBetween = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min) + min);
-  }
-
-  bubbleSort = (): void => {
-    const numberOfBars = this.bars.length;
-
-    // The unsortedCount is the length of the part of the array that's not yet sorted
-    let unsortedCount = numberOfBars - 1;
-
-    // The unsortedCount just keeps track of which iteration we're on
-    while (unsortedCount > 0) {
-
-      // The index is what's really in charge of the manipulation
-      for (let index = 0; index < unsortedCount; index++) {
-        const nextIndex = index + 1;
-
-        if (this.bars[index].height > this.bars[nextIndex].height) {
-          this.switchBars({ bars: this.bars, i: index, j: nextIndex })
-        }
-      }
-
-      unsortedCount--;
-    }
-  }
-
-  delay = (currentIndex: number, minIndex: number): void => {
-
   }
 
   // TODO: see if we can clean this up at all
@@ -176,19 +184,26 @@ export default class Visualizer {
     this.merge({ startingIndex, pivot, endingIndex })
   }
 
-  partition = ({ bars, startingIndex, endingIndex }: QuicksortParamsType): number => {
+  partition = async ({ bars, startingIndex, endingIndex }: QuicksortParamsType): Promise<number> => {
     const pivot = bars[endingIndex]
     let i = startingIndex - 1;
 
     for (let currentIndex = startingIndex; currentIndex <= endingIndex - 1; currentIndex++) {
+      this.setCurrentBarColor({ index: currentIndex, color: "red" })
+
       if (bars[currentIndex].height < pivot.height) {
         i++;
-        this.switchBars({ bars: this.bars, i, j: currentIndex })
+        await this.switchBars({ bars: this.bars, i, j: currentIndex })
       }
+
+      this.setCurrentBarColor({ index: currentIndex, color: "white" })
     }
 
     i++;
-    this.switchBars({ bars, i, j: endingIndex })
+
+    this.setCurrentBarColor({ index: endingIndex, color: "red" })
+    await this.switchBars({ bars, i, j: endingIndex })
+    this.setCurrentBarColor({ index: endingIndex, color: "white" })
 
     return i;
   }
@@ -204,13 +219,18 @@ export default class Visualizer {
     this.quickSort({ bars, startingIndex: pivot + 1, endingIndex })
   }
 
-  selectionSort = (): void => {
+  setCurrentBarColor = ({ bars = this.bars, index, color }) => {
+    const currentBarElement = bars[index].domElement;
+    currentBarElement.style.backgroundColor = color;
+  }
+
+  selectionSort = async (): Promise<void> => {
     const numberOfBars = this.bars.length;
 
     for (let currentIndex = 0; currentIndex < numberOfBars; currentIndex++) {
       let minIndex = currentIndex;
-      const currentBarElement = this.bars[currentIndex].domElement;
-      currentBarElement.style.backgroundColor = "red";
+
+      this.setCurrentBarColor({ index: currentIndex, color: "red" })
 
       // Find the shortest bar in the unsorted array
       for (let unsortedIndex = currentIndex + 1; unsortedIndex < numberOfBars; unsortedIndex++) {
@@ -219,13 +239,17 @@ export default class Visualizer {
         }
       }
 
-      this.switchBars({ bars: this.bars, i: currentIndex, j: minIndex })
-      currentBarElement.style.backgroundColor = "white";
+      await this.switchBars({ bars: this.bars, i: currentIndex, j: minIndex })
+      this.setCurrentBarColor({ index: currentIndex, color: "white" })
     }
   }
 
   setMaxBars = ({ maxBars }: { maxBars: number }): void => {
     this.maxBars = maxBars;
+  }
+
+  setSortSpeed = ({ sortSpeed }: { sortSpeed: number }): void => {
+    this.sortSpeed = sortSpeed;
   }
 
   styler = (element: HTMLDivElement, style: StyleType): HTMLDivElement => {
@@ -237,10 +261,12 @@ export default class Visualizer {
     return element;
   }
 
-  switchBars = ({ bars, i, j }: { bars: BarType[], i: number, j: number }) => {
+  switchBars = async ({ bars, i, j }: { bars: BarType[], i: number, j: number }) => {
     const tempOrder = bars[i].domElement?.style.order
     bars[i].domElement?.style.order = bars[j].domElement.style.order
     bars[j].domElement.style.order = tempOrder
+
+    await this.delay();
 
     const temp = bars[i]
     bars[i] = bars[j]
