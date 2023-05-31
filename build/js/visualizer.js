@@ -61,6 +61,68 @@ export default class Visualizer {
         };
         this.delay = (currentIndex, minIndex) => {
         };
+        // TODO: see if we can clean this up at all
+        this.merge = ({ startingIndex, pivot, endingIndex }) => {
+            var _a;
+            let leftArraySize = pivot - startingIndex + 1;
+            let rightArraySize = endingIndex - pivot;
+            // Create temp arrays
+            const leftArray = new Array(leftArraySize);
+            const rightArray = new Array(rightArraySize);
+            let leftArrayIndex = 0;
+            let rightArrayIndex = 0;
+            // Set the left and right arrays
+            for (let currentIndex = startingIndex; currentIndex <= endingIndex; currentIndex++) {
+                if (currentIndex <= pivot) {
+                    leftArray[leftArrayIndex] = this.bars[currentIndex];
+                    leftArrayIndex++;
+                }
+                else {
+                    rightArray[rightArrayIndex] = this.bars[currentIndex];
+                    rightArrayIndex++;
+                }
+            }
+            leftArrayIndex = 0;
+            rightArrayIndex = 0;
+            // // Sort bars by left and right arrays
+            for (let currentIndex = startingIndex; currentIndex <= endingIndex; currentIndex++) {
+                // debugger
+                // Ensure that the indexes are in range
+                if ((leftArrayIndex < leftArraySize) && (rightArrayIndex < rightArraySize)) {
+                    // debugger
+                    // If they are, assign the correct bar
+                    if (leftArray[leftArrayIndex].height < rightArray[rightArrayIndex].height) {
+                        this.bars[currentIndex] = leftArray[leftArrayIndex];
+                        leftArrayIndex++;
+                    }
+                    else {
+                        this.bars[currentIndex] = rightArray[rightArrayIndex];
+                        rightArrayIndex++;
+                    }
+                    // If the indexes are not in range, then that means that either the left 
+                    // or the right array have elements remaining
+                    // Just need to go through and assign them one by one
+                }
+                else if (leftArrayIndex < leftArraySize) {
+                    this.bars[currentIndex] = leftArray[leftArrayIndex];
+                    leftArrayIndex++;
+                }
+                else {
+                    this.bars[currentIndex] = rightArray[rightArrayIndex];
+                    rightArrayIndex++;
+                }
+                (_a = this.bars[currentIndex].domElement) === null || _a === void 0 ? void 0 : _a.style.order = `${currentIndex}`;
+            }
+        };
+        this.mergeSort = ({ startingIndex, endingIndex } = { startingIndex: 0, endingIndex: this.bars.length - 1 }) => {
+            // Base case. Nothing left to do here
+            if (startingIndex == endingIndex)
+                return;
+            const pivot = Math.floor((startingIndex + endingIndex) / 2);
+            this.mergeSort({ startingIndex, endingIndex: pivot });
+            this.mergeSort({ startingIndex: pivot + 1, endingIndex });
+            this.merge({ startingIndex, pivot, endingIndex });
+        };
         this.partition = ({ bars, startingIndex, endingIndex }) => {
             const pivot = bars[endingIndex];
             let i = startingIndex - 1;

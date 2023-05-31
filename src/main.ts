@@ -28,6 +28,14 @@ const generateBars = () => {
   }
 }
 
+const mergeSort = (): void => {
+  if (visualizer) {
+    visualizer.mergeSort();
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
 const quickSort = (): void => {
   if (visualizer) {
     visualizer.quickSort();
@@ -79,7 +87,6 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
   }
 }
 
-
 // Attach functions to the DOM 
 window.addEventListener(
   "resize",
@@ -92,5 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
 document.getElementById('bubble-sort')?.addEventListener("click", () => bubbleSort());
+document.getElementById('merge-sort')?.addEventListener("click", () => mergeSort());
 document.getElementById('quick-sort')?.addEventListener("click", () => quickSort());
 document.getElementById('selection-sort')?.addEventListener("click", () => selectionSort());

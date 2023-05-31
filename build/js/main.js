@@ -1,4 +1,4 @@
-var _a, _b, _c, _d;
+var _a, _b, _c, _d, _e;
 import Visualizer from "./visualizer.js";
 let visualizer = null;
 const bubbleSort = () => {
@@ -20,6 +20,14 @@ const generateBars = () => {
     if (visualizer) {
         const numberOfBars = visualizer.generateBars();
         writeMetric({ metric: numberOfBars, metricClassName: "total-bars", metricTitle: "Total Bars" });
+    }
+    else {
+        alert("Visualizer is null");
+    }
+};
+const mergeSort = () => {
+    if (visualizer) {
+        visualizer.mergeSort();
     }
     else {
         alert("Visualizer is null");
@@ -81,5 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 (_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
 (_b = document.getElementById('bubble-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => bubbleSort());
-(_c = document.getElementById('quick-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => quickSort());
-(_d = document.getElementById('selection-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => selectionSort());
+(_c = document.getElementById('merge-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => mergeSort());
+(_d = document.getElementById('quick-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => quickSort());
+(_e = document.getElementById('selection-sort')) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => selectionSort());
