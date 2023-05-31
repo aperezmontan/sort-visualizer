@@ -20,7 +20,21 @@ const generateBars = () => {
   }
 }
 
-document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
+const quickSort = (): void => {
+  if (visualizer) {
+    visualizer.quickSort();
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
+const selectionSort = (): void => {
+  if (visualizer) {
+    visualizer.selectionSort();
+  } else {
+    alert("Visualizer is null")
+  }
+}
 
 const setMaxBars = () => {
   const width = window.innerWidth;
@@ -43,10 +57,6 @@ const setVisualizer = (): Visualizer => {
   return visualizer;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  visualizer = setVisualizer();
-});
-
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number | null, metricClassName: string, metricTitle: string }): void => {
   if (metric) {
@@ -61,8 +71,17 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
   }
 }
 
+
+// Attach functions to the DOM 
 window.addEventListener(
   "resize",
   // TODO: Look into this error
   debounce(() => setMaxBars(), 250)
 );
+
+document.addEventListener("DOMContentLoaded", () => {
+  visualizer = setVisualizer();
+});
+document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
+document.getElementById('quick-sort')?.addEventListener("click", () => quickSort());
+document.getElementById('selection-sort')?.addEventListener("click", () => selectionSort());

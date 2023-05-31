@@ -1,4 +1,4 @@
-var _a;
+var _a, _b, _c;
 import Visualizer from "./visualizer.js";
 let visualizer = null;
 const debounce = (callback, delay = 300) => {
@@ -17,7 +17,22 @@ const generateBars = () => {
         alert("Visualizer is null");
     }
 };
-(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
+const quickSort = () => {
+    if (visualizer) {
+        visualizer.quickSort();
+    }
+    else {
+        alert("Visualizer is null");
+    }
+};
+const selectionSort = () => {
+    if (visualizer) {
+        visualizer.selectionSort();
+    }
+    else {
+        alert("Visualizer is null");
+    }
+};
 const setMaxBars = () => {
     const width = window.innerWidth;
     const maxBars = Math.floor(width / 5);
@@ -36,9 +51,6 @@ const setVisualizer = () => {
     setMaxBars();
     return visualizer;
 };
-document.addEventListener("DOMContentLoaded", () => {
-    visualizer = setVisualizer();
-});
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }) => {
     if (metric) {
@@ -52,6 +64,13 @@ const writeMetric = ({ metric, metricClassName, metricTitle }) => {
         alert(`${metricTitle} is null`);
     }
 };
+// Attach functions to the DOM 
 window.addEventListener("resize", 
 // TODO: Look into this error
 debounce(() => setMaxBars(), 250));
+document.addEventListener("DOMContentLoaded", () => {
+    visualizer = setVisualizer();
+});
+(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
+(_b = document.getElementById('quick-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => quickSort());
+(_c = document.getElementById('selection-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => selectionSort());
