@@ -1,5 +1,5 @@
 export default class Visualizer {
-    constructor({ maxBars, styleObj, visualizerContainerQuery }) {
+    constructor({ maxBars, visualizerContainerQuery }) {
         this.bars = [];
         this.delay = () => {
             return new Promise(resolve => {
@@ -19,10 +19,6 @@ export default class Visualizer {
                     // Create the bar div element
                     const domElement = document.createElement('div');
                     domElement.className = "bar";
-                    // Let's make this a tooltip because text doesn't look great at this pixel width
-                    // bar.innerHTML = `${height}`;
-                    // Style it
-                    // const styledDiv = this.styler(bar, this.styleObj)
                     domElement.style.height = `${heightPercentOfViewport}%`;
                     domElement.style.order = `${index}`;
                     const bar = Object.assign({ domElement }, barValue);
@@ -35,12 +31,13 @@ export default class Visualizer {
             return null;
         };
         this.getRandomBarValues = () => {
-            return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x) => {
+            return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x, originalOrder) => {
                 const height = this.getRandomNumberBetween(1, this.maxBars);
                 const heightPercentOfViewport = height / this.maxBars * 100;
                 return {
                     height,
-                    heightPercentOfViewport
+                    heightPercentOfViewport,
+                    originalOrder
                 };
             });
         };
@@ -49,6 +46,26 @@ export default class Visualizer {
         };
         this.hasBars = () => {
             return this.bars.length > 0;
+        };
+        this.isSorted = () => {
+            if (!this.hasBars()) {
+                alert("No bars");
+                return false;
+            }
+            let lastBar = this.bars[0];
+            return this.bars.every((bar) => {
+                const nextBarTaller = bar.height >= lastBar.height;
+                lastBar = bar;
+                return nextBarTaller;
+            });
+        };
+        this.unsortBars = () => {
+            // Only merge sort can be reset by changing style.order. 
+            // All the other sorts actually change the order of the bar in place, 
+            // so this needs to be undone.
+            this.bars.sort((barA, barB) => {
+                return barA.originalOrder - barB.originalOrder;
+            }).forEach((bar, index) => this.bars[index].domElement.style.order = `${bar.originalOrder}`);
         };
         // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
         //   const currentBarElement = bars[index].domElement;
@@ -68,19 +85,8 @@ export default class Visualizer {
             };
             algorithm(args);
         };
-        this.styler = (element, style) => {
-            for (const styleProperty in style) {
-                // TODO: figure out this issue
-                element.style[styleProperty] = style[styleProperty];
-            }
-            return element;
-        };
         this.maxBars = maxBars || 0;
         this.sortSpeed = 100;
         this.visualizerContainerQuery = visualizerContainerQuery;
-        this.styleObj = styleObj || {
-            'background-color': 'blue',
-            'color': 'red'
-        };
     }
 }

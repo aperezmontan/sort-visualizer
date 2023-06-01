@@ -17,6 +17,18 @@ button {
   padding: .2rem;
   font-family: 'Geologica', sans-serif;
   font-weight: 100;
+  background-color: white;
+  color: black;
+  text-decoration: none;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:disabled{
+  cursor: not-allowed;
+  background-color: #777;
 }
 
 @media only screen and (min-width: 600px)  {
@@ -131,6 +143,17 @@ label.dark-mode-label, label.dark-mode-label:after {
 }
 /* ******************************************************************************** */
 
+@keyframes append-animate {
+	from {
+		transform: scaleY(0);
+		opacity: 0;
+	}
+	to {
+		transform: scaleY(1);
+		opacity: 1;
+	}
+}
+
 .bar {
   transition: all ease .3s;
   flex: 1;
@@ -139,7 +162,7 @@ label.dark-mode-label, label.dark-mode-label:after {
   align-items: end;
   font-size: x-small;
   background-color: white;
-  color: red;
+  animation: append-animate .5s linear;
 }
 
 .bar.selected {
@@ -158,14 +181,14 @@ label.dark-mode-label, label.dark-mode-label:after {
   color: black
 }
 
-#visualizer.light-mode .generate-bars-container > button {
+#visualizer.light-mode button {
   color: white;
   background-color: black;
 }
 
-#visualizer.light-mode .sort-buttons-container > button {
-  color: white;
-  background-color: black;
+#visualizer.light-mode button:disabled{
+  cursor: not-allowed;
+  background-color: #777;
 }
 
 .bar {

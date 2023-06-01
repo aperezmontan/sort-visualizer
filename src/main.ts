@@ -4,14 +4,6 @@ import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 let visualizer: Visualizer | null = null;
 const visualizerDomElement = document.getElementById('visualizer');
 
-const runBubbleSort = (): void => {
-  if (visualizer) {
-    visualizer.sort({ algorithm: bubbleSort });
-  } else {
-    alert("Visualizer is null")
-  }
-}
-
 const debounce = (callback: Function, delay: number = 300): Function => {
   let timeout: ReturnType<typeof setTimeout>;
 
@@ -20,20 +12,6 @@ const debounce = (callback: Function, delay: number = 300): Function => {
     timeout = setTimeout(() => callback.apply(args), delay);
   };
 };
-
-const generateBars = () => {
-  if (visualizer) {
-    const numberOfBars = visualizer.generateBars();
-    writeMetric({ metric: numberOfBars, metricClassName: "total-bars", metricTitle: "Total Bars" });
-  } else {
-    alert("Visualizer is null")
-  }
-}
-
-const generateNewBars = () => {
-  generateBars();
-  setSortingCapability({ allowSorting: true });
-}
 
 const hasBars = (): boolean => {
   if (visualizer) {
@@ -44,9 +22,66 @@ const hasBars = (): boolean => {
   return false;
 }
 
+const isSorted = (): boolean => {
+  if (visualizer) {
+    return visualizer.isSorted();
+  }
+
+  console.log("Visualizer is null");
+  return false;
+}
+
+// Generating and resetting bars
+const resetBars = (): void | undefined => {
+  if (isSorted()) {
+    unsortBars();
+    setSortingCapability({ allowSorting: true });
+  } else {
+    console.log("Already reset");
+  }
+}
+
+const unsortBars = () => {
+  if (visualizer) {
+    visualizer.unsortBars();
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
+const generateBars = () => {
+  if (visualizer) {
+    const numberOfBars = visualizer.generateBars();
+    writeMetric({ metric: numberOfBars, metricClassName: "total-bars", metricTitle: "Total Bars" });
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
+const generateNewBars = (): void | undefined => {
+  if (!isSorted()) {
+    generateBars();
+    setSortingCapability({ allowSorting: true });
+  } else {
+    console.log("Sorted!");
+  }
+}
+/////////////////////////////////////
+
+// Running the sorts
+const runBubbleSort = (): void => {
+  if (visualizer) {
+    visualizer.sort({ algorithm: bubbleSort });
+    setSortingCapability({ allowSorting: false });
+  } else {
+    alert("Visualizer is null")
+  }
+}
+
 const runMergeSort = (): void => {
   if (visualizer) {
     visualizer.sort({ algorithm: mergeSort });
+    setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
   }
@@ -55,6 +90,7 @@ const runMergeSort = (): void => {
 const runQuickSort = (): void => {
   if (visualizer) {
     visualizer.sort({ algorithm: quickSort });
+    setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
   }
@@ -63,11 +99,14 @@ const runQuickSort = (): void => {
 const runSelectionSort = (): void => {
   if (visualizer) {
     visualizer.sort({ algorithm: selectionSort });
+    setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
   }
 }
+///////////////////////////////////////////////////
 
+// DOM setup
 const setMaxBars = () => {
   const width = window.innerWidth;
   const maxBars = Math.floor(width / 3);
@@ -134,6 +173,39 @@ const setSortSpeed = (): void => {
   }
 }
 
+const setSortingCapability = ({ allowSorting }: { allowSorting: boolean }): void => {
+  const sortElementIds = [
+    "bubble-sort",
+    "merge-sort",
+    "quick-sort",
+    "selection-sort",
+  ]
+  const buttons = sortElementIds.map(id => document.getElementById(id));
+
+  if (!hasBars()) {
+    alert("no bars to sort");
+    return;
+  }
+
+  if (allowSorting) {
+    toggleBarButtons({ canGenerateBars: true });
+    buttons.forEach(button => button && button.removeAttribute("disabled"));
+  } else {
+    toggleBarButtons({ canGenerateBars: false });
+    buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+  }
+}
+
+const toggleBarButtons = ({ canGenerateBars }: { canGenerateBars: boolean }): void => {
+  if (canGenerateBars) {
+    resetBarsButton?.setAttribute("hidden", "true");
+    generateNewBarsButton?.removeAttribute("hidden");
+  } else {
+    generateNewBarsButton?.setAttribute("hidden", "true");
+    resetBarsButton?.removeAttribute("hidden");
+  }
+}
+
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number | null, metricClassName: string, metricTitle: string }): void => {
   if (metric) {
@@ -147,28 +219,7 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
     alert(`${metricTitle} is null`)
   }
 }
-
-const sortElementIds = [
-  "bubble-sort",
-  "merge-sort",
-  "quick-sort",
-  "selection-sort",
-]
-
-const setSortingCapability = ({ allowSorting }: { allowSorting: boolean }): void => {
-  const buttons = sortElementIds.map(id => document.getElementById(id));
-
-  if (!hasBars()) {
-    alert("no bars to sort");
-    return;
-  }
-
-  if (allowSorting) {
-    buttons.forEach(button => button && button.removeAttribute("disabled"));
-  } else {
-    buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
-  }
-}
+//////////////////////////////////////////////////////////////
 
 // Attach functions to the DOM 
 document.addEventListener("DOMContentLoaded", () => {
@@ -176,7 +227,12 @@ document.addEventListener("DOMContentLoaded", () => {
   generateBars();
   setSortingCapability({ allowSorting: true });
 });
-document.getElementById('generate-bars')?.addEventListener("click", () => generateNewBars());
+
+const generateNewBarsButton = document.getElementById('generate-bars')
+generateNewBarsButton?.addEventListener("click", () => generateNewBars());
+const resetBarsButton = document.getElementById('reset-bars')
+resetBarsButton?.addEventListener("click", () => resetBars());
+
 document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
 document.getElementById('dark-mode')?.addEventListener("click", (e) => setDarkMode(e));
 document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());

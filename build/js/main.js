@@ -1,22 +1,46 @@
-var _a, _b, _c, _d, _e, _f, _g;
+var _a, _b, _c, _d, _e, _f;
 import Visualizer from "./visualizer.js";
 import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 let visualizer = null;
 const visualizerDomElement = document.getElementById('visualizer');
-const runBubbleSort = () => {
-    if (visualizer) {
-        visualizer.sort({ algorithm: bubbleSort });
-    }
-    else {
-        alert("Visualizer is null");
-    }
-};
 const debounce = (callback, delay = 300) => {
     let timeout;
     return (...args) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => callback.apply(args), delay);
     };
+};
+const hasBars = () => {
+    if (visualizer) {
+        return visualizer.hasBars();
+    }
+    console.log("Visualizer is null");
+    return false;
+};
+const isSorted = () => {
+    if (visualizer) {
+        return visualizer.isSorted();
+    }
+    console.log("Visualizer is null");
+    return false;
+};
+// Generating and resetting bars
+const resetBars = () => {
+    if (isSorted()) {
+        unsortBars();
+        setSortingCapability({ allowSorting: true });
+    }
+    else {
+        console.log("Already reset");
+    }
+};
+const unsortBars = () => {
+    if (visualizer) {
+        visualizer.unsortBars();
+    }
+    else {
+        alert("Visualizer is null");
+    }
 };
 const generateBars = () => {
     if (visualizer) {
@@ -28,19 +52,29 @@ const generateBars = () => {
     }
 };
 const generateNewBars = () => {
-    generateBars();
-    setSortingCapability({ allowSorting: true });
-};
-const hasBars = () => {
-    if (visualizer) {
-        return visualizer.hasBars();
+    if (!isSorted()) {
+        generateBars();
+        setSortingCapability({ allowSorting: true });
     }
-    console.log("Visualizer is null");
-    return false;
+    else {
+        console.log("Sorted!");
+    }
+};
+/////////////////////////////////////
+// Running the sorts
+const runBubbleSort = () => {
+    if (visualizer) {
+        visualizer.sort({ algorithm: bubbleSort });
+        setSortingCapability({ allowSorting: false });
+    }
+    else {
+        alert("Visualizer is null");
+    }
 };
 const runMergeSort = () => {
     if (visualizer) {
         visualizer.sort({ algorithm: mergeSort });
+        setSortingCapability({ allowSorting: false });
     }
     else {
         alert("Visualizer is null");
@@ -49,6 +83,7 @@ const runMergeSort = () => {
 const runQuickSort = () => {
     if (visualizer) {
         visualizer.sort({ algorithm: quickSort });
+        setSortingCapability({ allowSorting: false });
     }
     else {
         alert("Visualizer is null");
@@ -57,11 +92,14 @@ const runQuickSort = () => {
 const runSelectionSort = () => {
     if (visualizer) {
         visualizer.sort({ algorithm: selectionSort });
+        setSortingCapability({ allowSorting: false });
     }
     else {
         alert("Visualizer is null");
     }
 };
+///////////////////////////////////////////////////
+// DOM setup
 const setMaxBars = () => {
     const width = window.innerWidth;
     const maxBars = Math.floor(width / 3);
@@ -120,6 +158,37 @@ const setSortSpeed = () => {
         alert("Visualizer is null");
     }
 };
+const setSortingCapability = ({ allowSorting }) => {
+    const sortElementIds = [
+        "bubble-sort",
+        "merge-sort",
+        "quick-sort",
+        "selection-sort",
+    ];
+    const buttons = sortElementIds.map(id => document.getElementById(id));
+    if (!hasBars()) {
+        alert("no bars to sort");
+        return;
+    }
+    if (allowSorting) {
+        toggleBarButtons({ canGenerateBars: true });
+        buttons.forEach(button => button && button.removeAttribute("disabled"));
+    }
+    else {
+        toggleBarButtons({ canGenerateBars: false });
+        buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+    }
+};
+const toggleBarButtons = ({ canGenerateBars }) => {
+    if (canGenerateBars) {
+        resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButton.setAttribute("hidden", "true");
+        generateNewBarsButton === null || generateNewBarsButton === void 0 ? void 0 : generateNewBarsButton.removeAttribute("hidden");
+    }
+    else {
+        generateNewBarsButton === null || generateNewBarsButton === void 0 ? void 0 : generateNewBarsButton.setAttribute("hidden", "true");
+        resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButton.removeAttribute("hidden");
+    }
+};
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }) => {
     if (metric) {
@@ -133,38 +202,23 @@ const writeMetric = ({ metric, metricClassName, metricTitle }) => {
         alert(`${metricTitle} is null`);
     }
 };
-const sortElementIds = [
-    "bubble-sort",
-    "merge-sort",
-    "quick-sort",
-    "selection-sort",
-];
-const setSortingCapability = ({ allowSorting }) => {
-    const buttons = sortElementIds.map(id => document.getElementById(id));
-    if (!hasBars()) {
-        alert("no bars to sort");
-        return;
-    }
-    if (allowSorting) {
-        buttons.forEach(button => button && button.removeAttribute("disabled"));
-    }
-    else {
-        buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
-    }
-};
+//////////////////////////////////////////////////////////////
 // Attach functions to the DOM 
 document.addEventListener("DOMContentLoaded", () => {
     visualizer = setVisualizer();
     generateBars();
     setSortingCapability({ allowSorting: true });
 });
-(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateNewBars());
-(_b = document.getElementById('bubble-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => runBubbleSort());
-(_c = document.getElementById('dark-mode')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", (e) => setDarkMode(e));
-(_d = document.getElementById('merge-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => runMergeSort());
-(_e = document.getElementById('quick-sort')) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => runQuickSort());
-(_f = document.getElementById('selection-sort')) === null || _f === void 0 ? void 0 : _f.addEventListener("click", () => runSelectionSort());
-(_g = document.getElementById('sort-speed')) === null || _g === void 0 ? void 0 : _g.addEventListener("input", 
+const generateNewBarsButton = document.getElementById('generate-bars');
+generateNewBarsButton === null || generateNewBarsButton === void 0 ? void 0 : generateNewBarsButton.addEventListener("click", () => generateNewBars());
+const resetBarsButton = document.getElementById('reset-bars');
+resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButton.addEventListener("click", () => resetBars());
+(_a = document.getElementById('bubble-sort')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => runBubbleSort());
+(_b = document.getElementById('dark-mode')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", (e) => setDarkMode(e));
+(_c = document.getElementById('merge-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => runMergeSort());
+(_d = document.getElementById('quick-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => runQuickSort());
+(_e = document.getElementById('selection-sort')) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => runSelectionSort());
+(_f = document.getElementById('sort-speed')) === null || _f === void 0 ? void 0 : _f.addEventListener("input", 
 // TODO: Look into this error
 () => setBubble(slider, bubble));
 // Set the max number of bars based on the screen width
