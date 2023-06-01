@@ -2,6 +2,7 @@ import Visualizer from "./visualizer.js";
 import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 
 let visualizer: Visualizer | null = null;
+const visualizerDomElement = document.getElementById('visualizer');
 
 const runBubbleSort = (): void => {
   if (visualizer) {
@@ -55,7 +56,7 @@ const runSelectionSort = (): void => {
 
 const setMaxBars = () => {
   const width = window.innerWidth;
-  const maxBars = Math.floor(width / 5);
+  const maxBars = Math.floor(width / 3);
 
   console.log("setting max bars")
 
@@ -76,14 +77,43 @@ const setVisualizer = (): Visualizer => {
   return visualizer;
 }
 
-const slider = (): void => {
+const bubble = <HTMLOutputElement>document.getElementById('sort-speed-bubble');
+const slider = <HTMLInputElement>document.getElementById('sort-speed');
+
+const setBubble = (range: HTMLInputElement, bubble: HTMLOutputElement) => {
+  const val = range.value;
+  const min = range.min ? range.min : 0;
+  const max = range.max ? range.max : 100;
+  const newVal = Number(((val - min) * 100) / (max - min));
+  bubble.innerHTML = val;
+
+  // Sorta magic numbers based on size of the native UI thumb
+  bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+
+  return debounce(setSortSpeed);
+}
+
+const setDarkMode = (e): void => {
+  // debugger
+  if (visualizerDomElement && e.target) {
+    if (e.target.checked) {
+      visualizerDomElement.classList.remove("light-mode");
+    } else {
+      visualizerDomElement.classList.add("light-mode");
+    }
+  } else {
+    console.log("Visualizer DOM element not found")
+  }
+}
+
+const setSortSpeed = (): void => {
   // TODO: Not sure how else to do this. Debounce won't pass event 
   // into this function. See if you can improve
-  const slider = <HTMLInputElement>document.getElementById('sort-speed');
+  console.log("slide value", slider.value)
   const value = parseInt(slider.value)
 
-  if (value && visualizer) {
-    const sortSpeed = Math.floor(1000 - (value / 100) * 1000);
+  if (!isNaN(value) && visualizer) {
+    const sortSpeed = 1000 - value;
     console.log("setting sort speed to", sortSpeed, "ms")
     visualizer.setSortSpeed({ sortSpeed });
   } else {
@@ -109,13 +139,14 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
 document.addEventListener("DOMContentLoaded", () => visualizer = setVisualizer());
 document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
 document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
+document.getElementById('dark-mode')?.addEventListener("click", (e) => setDarkMode(e));
 document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());
 document.getElementById('quick-sort')?.addEventListener("click", () => runQuickSort());
 document.getElementById('selection-sort')?.addEventListener("click", () => runSelectionSort());
 document.getElementById('sort-speed')?.addEventListener(
   "input",
   // TODO: Look into this error
-  debounce(slider, 250)
+  () => setBubble(slider, bubble)
 );
 
 // Set the max number of bars based on the screen width

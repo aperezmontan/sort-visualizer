@@ -61,7 +61,6 @@ export default class Visualizer {
                 startingIndex: 0,
                 endingIndex: this.bars.length - 1
             };
-            debugger;
             algorithm(args);
         };
         this.styler = (element, style) => {

@@ -108,7 +108,6 @@ export const selectionSort = ({ bars }) => {
     }
 };
 const switchBars = ({ bars, i, j }) => {
-    console.log("Switching bars", i, j);
     const tempOrder = bars[i].domElement.style.order;
     bars[i].domElement.style.order = bars[j].domElement.style.order;
     bars[j].domElement.style.order = tempOrder;
