@@ -37,6 +37,9 @@ export default class Visualizer {
   }
 
   generateBars = (): number | null => {
+    // TODO: stop any running sorts
+    // this.stopSorts()
+
     if (this.visualizerContainerQuery.length > 0) {
       const visualizerContainer = this.visualizerContainerQuery[0];
 
@@ -92,6 +95,10 @@ export default class Visualizer {
 
   getRandomNumberBetween = (min: number, max: number): number => {
     return Math.floor(Math.random() * (max - min) + min);
+  }
+
+  hasBars = (): boolean => {
+    return this.bars.length > 0
   }
 
   // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
