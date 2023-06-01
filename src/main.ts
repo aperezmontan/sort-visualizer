@@ -1,10 +1,12 @@
 import Visualizer from "./visualizer.js";
+import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 
 let visualizer: Visualizer | null = null;
+const visualizerDomElement = document.getElementById('visualizer');
 
-const bubbleSort = (): void => {
+const runBubbleSort = (): void => {
   if (visualizer) {
-    visualizer.bubbleSort();
+    visualizer.sort({ algorithm: bubbleSort });
   } else {
     alert("Visualizer is null")
   }
@@ -13,9 +15,8 @@ const bubbleSort = (): void => {
 const debounce = (callback: Function, delay: number = 300): Function => {
   let timeout: ReturnType<typeof setTimeout>;
 
-  return (...args: any[]) => {
+  return (...args: any[]): void => {
     clearTimeout(timeout);
-    // debugger
     timeout = setTimeout(() => callback.apply(args), delay);
   };
 };
@@ -29,25 +30,25 @@ const generateBars = () => {
   }
 }
 
-const mergeSort = (): void => {
+const runMergeSort = (): void => {
   if (visualizer) {
-    visualizer.mergeSort();
+    visualizer.sort({ algorithm: mergeSort });
   } else {
     alert("Visualizer is null")
   }
 }
 
-const quickSort = (): void => {
+const runQuickSort = (): void => {
   if (visualizer) {
-    visualizer.quickSort();
+    visualizer.sort({ algorithm: quickSort });
   } else {
     alert("Visualizer is null")
   }
 }
 
-const selectionSort = (): void => {
+const runSelectionSort = (): void => {
   if (visualizer) {
-    visualizer.selectionSort();
+    visualizer.sort({ algorithm: selectionSort });
   } else {
     alert("Visualizer is null")
   }
@@ -55,8 +56,10 @@ const selectionSort = (): void => {
 
 const setMaxBars = () => {
   const width = window.innerWidth;
-  const maxBars = Math.floor(width / 5);
+  const maxBars = Math.floor(width / 3);
+
   console.log("setting max bars")
+
   if (visualizer) {
     visualizer.setMaxBars({ maxBars });
     writeMetric({ metric: width, metricClassName: "window-width", metricTitle: "Width" });
@@ -74,14 +77,44 @@ const setVisualizer = (): Visualizer => {
   return visualizer;
 }
 
-const slider = () => {
+const bubble = <HTMLOutputElement>document.getElementById('sort-speed-bubble');
+const slider = <HTMLInputElement>document.getElementById('sort-speed');
+
+const setBubble = (range: HTMLInputElement, bubble: HTMLOutputElement) => {
+  const val = range.value;
+  const min = range.min ? range.min : 0;
+  const max = range.max ? range.max : 100;
+  const newVal = Number(((val - min) * 100) / (max - min));
+  bubble.innerHTML = val;
+
+  // Sorta magic numbers based on size of the native UI thumb
+  bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+
+  return debounce(setSortSpeed);
+}
+
+const setDarkMode = (e): void => {
+  // debugger
+  if (visualizerDomElement && e.target) {
+    if (e.target.checked) {
+      visualizerDomElement.classList.remove("light-mode");
+    } else {
+      visualizerDomElement.classList.add("light-mode");
+    }
+  } else {
+    console.log("Visualizer DOM element not found")
+  }
+}
+
+const setSortSpeed = (): void => {
   // TODO: Not sure how else to do this. Debounce won't pass event 
   // into this function. See if you can improve
-  const value = parseInt(document.getElementById('sort-speed').value)
-  const sortSpeed = Math.floor(1000 - (value / 100) * 1000);
+  console.log("slide value", slider.value)
+  const value = parseInt(slider.value)
 
-  console.log("setting sort speed to", sortSpeed)
-  if (visualizer) {
+  if (!isNaN(value) && visualizer) {
+    const sortSpeed = 1000 - value;
+    console.log("setting sort speed to", sortSpeed, "ms")
     visualizer.setSortSpeed({ sortSpeed });
   } else {
     alert("Visualizer is null")
@@ -102,39 +135,23 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
   }
 }
 
-// const handleOnChange = (onChange) => (e) => {
-//   console.log(e.target);
-//   console.log(onChange);
-//   // e.persist();
-//   // debouncedOnChange(() => onChange(e));
-//   debounce(setMaxBars, 250)
-// };
-
 // Attach functions to the DOM 
+document.addEventListener("DOMContentLoaded", () => visualizer = setVisualizer());
+document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
+document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
+document.getElementById('dark-mode')?.addEventListener("click", (e) => setDarkMode(e));
+document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());
+document.getElementById('quick-sort')?.addEventListener("click", () => runQuickSort());
+document.getElementById('selection-sort')?.addEventListener("click", () => runSelectionSort());
+document.getElementById('sort-speed')?.addEventListener(
+  "input",
+  // TODO: Look into this error
+  () => setBubble(slider, bubble)
+);
+
+// Set the max number of bars based on the screen width
 window.addEventListener(
   "resize",
   // TODO: Look into this error
   debounce(setMaxBars, 250)
-);
-
-// const delayHandler = debounce((value) => slider(value), 250);
-
-// const handleChange = e => {
-//   const { value } = e.target;
-//   console.log("value", value)
-//   delayHandler(value);
-// };
-
-document.addEventListener("DOMContentLoaded", () => {
-  visualizer = setVisualizer();
-});
-document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
-document.getElementById('bubble-sort')?.addEventListener("click", () => bubbleSort());
-document.getElementById('merge-sort')?.addEventListener("click", () => mergeSort());
-document.getElementById('quick-sort')?.addEventListener("click", () => quickSort());
-document.getElementById('selection-sort')?.addEventListener("click", () => selectionSort());
-// const foo = (e) => debounce(slider(e), 250)
-document.getElementById('sort-speed')?.addEventListener(
-  "input",
-  debounce(slider, 250)
 );
