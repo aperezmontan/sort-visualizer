@@ -27,12 +27,14 @@ body {
   align-items: flex-end;
   margin: 0 auto;
   padding: 5% 0;
+  gap: 1px;
 }
 
 .bar {
   transition: all ease .3s;
   flex: 1;
   display: flex;
+  min-width: 2px;
   align-items: end;
   font-size: x-small;
   background-color: white;

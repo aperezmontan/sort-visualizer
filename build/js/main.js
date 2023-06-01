@@ -1,9 +1,10 @@
 var _a, _b, _c, _d, _e, _f;
 import Visualizer from "./visualizer.js";
+import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 let visualizer = null;
-const bubbleSort = () => {
+const runBubbleSort = () => {
     if (visualizer) {
-        visualizer.bubbleSort();
+        visualizer.sort({ algorithm: bubbleSort });
     }
     else {
         alert("Visualizer is null");
@@ -13,7 +14,6 @@ const debounce = (callback, delay = 300) => {
     let timeout;
     return (...args) => {
         clearTimeout(timeout);
-        // debugger
         timeout = setTimeout(() => callback.apply(args), delay);
     };
 };
@@ -26,25 +26,25 @@ const generateBars = () => {
         alert("Visualizer is null");
     }
 };
-const mergeSort = () => {
+const runMergeSort = () => {
     if (visualizer) {
-        visualizer.mergeSort();
+        visualizer.sort({ algorithm: mergeSort });
     }
     else {
         alert("Visualizer is null");
     }
 };
-const quickSort = () => {
+const runQuickSort = () => {
     if (visualizer) {
-        visualizer.quickSort();
+        visualizer.sort({ algorithm: quickSort });
     }
     else {
         alert("Visualizer is null");
     }
 };
-const selectionSort = () => {
+const runSelectionSort = () => {
     if (visualizer) {
-        visualizer.selectionSort();
+        visualizer.sort({ algorithm: selectionSort });
     }
     else {
         alert("Visualizer is null");
@@ -72,10 +72,11 @@ const setVisualizer = () => {
 const slider = () => {
     // TODO: Not sure how else to do this. Debounce won't pass event 
     // into this function. See if you can improve
-    const value = parseInt(document.getElementById('sort-speed').value);
-    const sortSpeed = Math.floor(1000 - (value / 100) * 1000);
-    console.log("setting sort speed to", sortSpeed);
-    if (visualizer) {
+    const slider = document.getElementById('sort-speed');
+    const value = parseInt(slider.value);
+    if (value && visualizer) {
+        const sortSpeed = Math.floor(1000 - (value / 100) * 1000);
+        console.log("setting sort speed to", sortSpeed, "ms");
         visualizer.setSortSpeed({ sortSpeed });
     }
     else {
@@ -95,30 +96,17 @@ const writeMetric = ({ metric, metricClassName, metricTitle }) => {
         alert(`${metricTitle} is null`);
     }
 };
-// const handleOnChange = (onChange) => (e) => {
-//   console.log(e.target);
-//   console.log(onChange);
-//   // e.persist();
-//   // debouncedOnChange(() => onChange(e));
-//   debounce(setMaxBars, 250)
-// };
 // Attach functions to the DOM 
+document.addEventListener("DOMContentLoaded", () => visualizer = setVisualizer());
+(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
+(_b = document.getElementById('bubble-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => runBubbleSort());
+(_c = document.getElementById('merge-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => runMergeSort());
+(_d = document.getElementById('quick-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => runQuickSort());
+(_e = document.getElementById('selection-sort')) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => runSelectionSort());
+(_f = document.getElementById('sort-speed')) === null || _f === void 0 ? void 0 : _f.addEventListener("input", 
+// TODO: Look into this error
+debounce(slider, 250));
+// Set the max number of bars based on the screen width
 window.addEventListener("resize", 
 // TODO: Look into this error
 debounce(setMaxBars, 250));
-// const delayHandler = debounce((value) => slider(value), 250);
-// const handleChange = e => {
-//   const { value } = e.target;
-//   console.log("value", value)
-//   delayHandler(value);
-// };
-document.addEventListener("DOMContentLoaded", () => {
-    visualizer = setVisualizer();
-});
-(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
-(_b = document.getElementById('bubble-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => bubbleSort());
-(_c = document.getElementById('merge-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => mergeSort());
-(_d = document.getElementById('quick-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => quickSort());
-(_e = document.getElementById('selection-sort')) === null || _e === void 0 ? void 0 : _e.addEventListener("click", () => selectionSort());
-// const foo = (e) => debounce(slider(e), 250)
-(_f = document.getElementById('sort-speed')) === null || _f === void 0 ? void 0 : _f.addEventListener("input", debounce(slider, 250));
