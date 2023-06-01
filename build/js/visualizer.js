@@ -7,6 +7,8 @@ export default class Visualizer {
             });
         };
         this.generateBars = () => {
+            // TODO: stop any running sorts
+            // this.stopSorts()
             if (this.visualizerContainerQuery.length > 0) {
                 const visualizerContainer = this.visualizerContainerQuery[0];
                 // Clear all of the bars that might be there from a previous run
@@ -44,6 +46,9 @@ export default class Visualizer {
         };
         this.getRandomNumberBetween = (min, max) => {
             return Math.floor(Math.random() * (max - min) + min);
+        };
+        this.hasBars = () => {
+            return this.bars.length > 0;
         };
         // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
         //   const currentBarElement = bars[index].domElement;

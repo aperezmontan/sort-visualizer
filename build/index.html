@@ -8,28 +8,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sort Visualizer 👀</title>
   <link rel="stylesheet" href="main.css">
+  <link rel="icon" href="images/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100;200&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="visualizer">
     <div class="button-bar">
-      <button id="generate-bars">Generate Bars</button>
-      <button id="bubble-sort">Bubble Sort</button>
-      <button id="merge-sort">Merge Sort</button>
-      <button id="quick-sort">Quick Sort</button>
-      <button id="selection-sort">Selection Sort</button>
-      <div class="dark-mode-container">
-        <label for="dark-mode">
-          Dark Mode
-          <input type="checkbox" id="dark-mode" checked autocomplete="off">
-        </label>
+      <div class="generate-bars-container">
+        <button id="generate-bars">Generate New Bars</button>
       </div>
-      <!-- <div class="sort-speed-container">
-        <input type="range" min="0" max="1000" class="slider" id="sort-speed">
-        <output class="bubble" id="sort-speed-bubble"></output>
-      </div> -->
+      <div class="sort-buttons-container">
+        <button id="bubble-sort" disabled>Bubble Sort</button>
+        <button id="merge-sort" disabled>Merge Sort</button>
+        <button id="quick-sort" disabled>Quick Sort</button>
+        <button id="selection-sort" disabled>Selection Sort</button>
+      </div>
+      <div class="options-container">
+        <div class="dark-mode-container">
+          <input class="dark-mode-toggle" type="checkbox" id="dark-mode" checked autocomplete="off">
+          <label class="dark-mode-label" for="dark-mode"></label>
+        </div>
+        <div class="sort-speed-container">
+          <!-- <input type="range" min="0" max="1000" value="900" class="slider" id="sort-speed" autocomplete="off">
+          <output class="bubble" id="sort-speed-bubble"></output> -->
+        </div>
+      </div>
+      <!-- DEV METRICS
       <div class="window-width"></div>
       <div class="max-bars"></div>
-      <div class="total-bars"></div>
+      <div class="total-bars"></div> -->
     </div>
     <div class="visualizer-container"></div>
     <!-- TODO: see if making this a Canvas will make it any prettier -->

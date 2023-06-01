@@ -9,6 +9,20 @@ body {
   min-width: 100vw;
   background-color: black;
   display: flex;
+  font-family: 'Geologica', sans-serif;
+}
+
+button {
+  border: none;
+  padding: .2rem;
+  font-family: 'Geologica', sans-serif;
+  font-weight: 100;
+}
+
+@media only screen and (min-width: 600px)  {
+  button {
+    font-weight: 200;
+  }
 }
 
 #visualizer {
@@ -19,7 +33,9 @@ body {
 }
 
 #visualizer > .button-bar {
-  background-color: bisque;
+  color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .visualizer-container {
@@ -31,11 +47,124 @@ body {
   gap: 1px;
 }
 
+.generate-bars-container {
+  margin-top: .5rem;
+}
+
+.generate-bars-container > button {
+  width: 100%;
+}
+
+.sort-buttons-container {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 1px;
+  margin-top: .2rem;
+}
+
+.sort-buttons-container > button {
+  flex: 1 1 0;
+  width: 0;
+}
+
+.options-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0.5rem;
+}
+
+.dark-mode-container {
+  display: flex;
+  align-items: center;
+}
+
+.sort-speed-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+}
+
+/* Dark Mode toggle from: https://redstapler.co/pure-css-minimal-dark-mode-toggle-button/ */
+label.dark-mode-label {
+  width: 40px;
+  height: 20px;
+  position: relative;
+  display: block;
+  background: #ebebeb;
+  border-radius: 200px;
+  box-shadow: inset 0px 5px 15px rgba(0,0,0,0.4), inset 0px -5px 15px rgba(255,255,255,0.4);
+  cursor: pointer;
+}
+
+label.dark-mode-label:after {
+  content: "";
+  width:18px;
+  height: 18px;
+  position: absolute;
+  top:1px;
+  left:1px;
+  background: linear-gradient(180deg,#ffcc89,#d8860b);
+  border-radius: 180px;
+  box-shadow: 0px 5px 10px rgba(0,0,0,0.2);
+}
+
+input.dark-mode-toggle {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+input.dark-mode-toggle:checked + label.dark-mode-label {
+  background: #242424;
+}
+
+input.dark-mode-toggle:checked + label.dark-mode-label:after {
+  left:39px;
+  transform: translateX(-100%);
+  background: linear-gradient(180deg,#777,#3a3a3a);
+}
+
+label.dark-mode-label, label.dark-mode-label:after {
+  transition: 0.3s;
+}
+/* ******************************************************************************** */
+
+.bar {
+  transition: all ease .3s;
+  flex: 1;
+  display: flex;
+  min-width: 2px;
+  align-items: end;
+  font-size: x-small;
+  background-color: white;
+  color: red;
+}
+
+.bar.selected {
+  background-color: green;
+}
+
 #visualizer.light-mode {
   background-color: azure;
 }
 
 #visualizer.light-mode .bar {
+  background-color: black;
+}
+
+#visualizer.light-mode > .button-bar {
+  color: black
+}
+
+#visualizer.light-mode .generate-bars-container > button {
+  color: white;
+  background-color: black;
+}
+
+#visualizer.light-mode .sort-buttons-container > button {
+  color: white;
   background-color: black;
 }
 
@@ -53,7 +182,6 @@ body {
 .bar.selected {
   background-color: green;
 }
-
 /* .bubble {
   background: red;
   color: white;
@@ -73,11 +201,3 @@ body {
   top: -1px;
   left: 50%;
 } */
-
-.sort-speed-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 25%;
-  margin-bottom: 2rem;
-}

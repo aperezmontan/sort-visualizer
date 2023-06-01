@@ -30,6 +30,20 @@ const generateBars = () => {
   }
 }
 
+const generateNewBars = () => {
+  generateBars();
+  setSortingCapability({ allowSorting: true });
+}
+
+const hasBars = (): boolean => {
+  if (visualizer) {
+    return visualizer.hasBars();
+  }
+
+  console.log("Visualizer is null");
+  return false;
+}
+
 const runMergeSort = (): void => {
   if (visualizer) {
     visualizer.sort({ algorithm: mergeSort });
@@ -94,7 +108,6 @@ const setBubble = (range: HTMLInputElement, bubble: HTMLOutputElement) => {
 }
 
 const setDarkMode = (e): void => {
-  // debugger
   if (visualizerDomElement && e.target) {
     if (e.target.checked) {
       visualizerDomElement.classList.remove("light-mode");
@@ -135,9 +148,35 @@ const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number 
   }
 }
 
+const sortElementIds = [
+  "bubble-sort",
+  "merge-sort",
+  "quick-sort",
+  "selection-sort",
+]
+
+const setSortingCapability = ({ allowSorting }: { allowSorting: boolean }): void => {
+  const buttons = sortElementIds.map(id => document.getElementById(id));
+
+  if (!hasBars()) {
+    alert("no bars to sort");
+    return;
+  }
+
+  if (allowSorting) {
+    buttons.forEach(button => button && button.removeAttribute("disabled"));
+  } else {
+    buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+  }
+}
+
 // Attach functions to the DOM 
-document.addEventListener("DOMContentLoaded", () => visualizer = setVisualizer());
-document.getElementById('generate-bars')?.addEventListener("click", () => generateBars());
+document.addEventListener("DOMContentLoaded", () => {
+  visualizer = setVisualizer();
+  generateBars();
+  setSortingCapability({ allowSorting: true });
+});
+document.getElementById('generate-bars')?.addEventListener("click", () => generateNewBars());
 document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
 document.getElementById('dark-mode')?.addEventListener("click", (e) => setDarkMode(e));
 document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());

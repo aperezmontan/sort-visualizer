@@ -27,6 +27,17 @@ const generateBars = () => {
         alert("Visualizer is null");
     }
 };
+const generateNewBars = () => {
+    generateBars();
+    setSortingCapability({ allowSorting: true });
+};
+const hasBars = () => {
+    if (visualizer) {
+        return visualizer.hasBars();
+    }
+    console.log("Visualizer is null");
+    return false;
+};
 const runMergeSort = () => {
     if (visualizer) {
         visualizer.sort({ algorithm: mergeSort });
@@ -83,7 +94,6 @@ const setBubble = (range, bubble) => {
     return debounce(setSortSpeed);
 };
 const setDarkMode = (e) => {
-    // debugger
     if (visualizerDomElement && e.target) {
         if (e.target.checked) {
             visualizerDomElement.classList.remove("light-mode");
@@ -123,9 +133,32 @@ const writeMetric = ({ metric, metricClassName, metricTitle }) => {
         alert(`${metricTitle} is null`);
     }
 };
+const sortElementIds = [
+    "bubble-sort",
+    "merge-sort",
+    "quick-sort",
+    "selection-sort",
+];
+const setSortingCapability = ({ allowSorting }) => {
+    const buttons = sortElementIds.map(id => document.getElementById(id));
+    if (!hasBars()) {
+        alert("no bars to sort");
+        return;
+    }
+    if (allowSorting) {
+        buttons.forEach(button => button && button.removeAttribute("disabled"));
+    }
+    else {
+        buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+    }
+};
 // Attach functions to the DOM 
-document.addEventListener("DOMContentLoaded", () => visualizer = setVisualizer());
-(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateBars());
+document.addEventListener("DOMContentLoaded", () => {
+    visualizer = setVisualizer();
+    generateBars();
+    setSortingCapability({ allowSorting: true });
+});
+(_a = document.getElementById('generate-bars')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => generateNewBars());
 (_b = document.getElementById('bubble-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => runBubbleSort());
 (_c = document.getElementById('dark-mode')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", (e) => setDarkMode(e));
 (_d = document.getElementById('merge-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => runMergeSort());
