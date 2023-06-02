@@ -92,10 +92,22 @@ button:disabled{
 }
 
 .sort-speed-container {
-  position: relative;
   display: flex;
-  flex-direction: column;
-  width: 25%;
+  position: relative;
+  width: 60%;
+  justify-content: space-evenly;
+}
+
+@media only screen and (min-width: 600px)  {
+  .sort-speed-container {
+    width: 25%;
+  }
+}
+
+output.speed-description {
+  width: 100%;
+  text-align: center;
+  font-weight: 100;
 }
 
 /* Dark Mode toggle from: https://redstapler.co/pure-css-minimal-dark-mode-toggle-button/ */
@@ -205,7 +217,24 @@ label.dark-mode-label, label.dark-mode-label:after {
 .bar.selected {
   background-color: green;
 }
-/* .bubble {
+
+.bar.sorted {
+  background-color: red;
+}
+
+#visualizer.light-mode .bar.selected {
+  background-color: blue;
+}
+
+#visualizer.light-mode .bar.sorted {
+  background-color: rgb(93, 162, 162);
+}
+
+.bar.swapped, #visualizer.light-mode .bar.swapped {
+  background-color: #f64fca;
+}
+
+/* .speed-description {
   background: red;
   color: white;
   padding: 4px 12px;
@@ -215,7 +244,7 @@ label.dark-mode-label, label.dark-mode-label:after {
   transform: translateX(-50%);
   margin-top: 2rem;
 } */
-/* .bubble::after {
+/* .speed-description::after {
   content: "";
   position: absolute;
   width: 2px;

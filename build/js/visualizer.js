@@ -1,11 +1,6 @@
 export default class Visualizer {
     constructor({ maxBars, visualizerContainerQuery }) {
         this.bars = [];
-        this.delay = () => {
-            return new Promise(resolve => {
-                setTimeout(() => resolve(''), this.sortSpeed);
-            });
-        };
         this.generateBars = () => {
             // TODO: stop any running sorts
             // this.stopSorts()
@@ -59,14 +54,6 @@ export default class Visualizer {
                 return nextBarTaller;
             });
         };
-        this.unsortBars = () => {
-            // Only merge sort can be reset by changing style.order. 
-            // All the other sorts actually change the order of the bar in place, 
-            // so this needs to be undone.
-            this.bars.sort((barA, barB) => {
-                return barA.originalOrder - barB.originalOrder;
-            }).forEach((bar, index) => this.bars[index].domElement.style.order = `${bar.originalOrder}`);
-        };
         // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
         //   const currentBarElement = bars[index].domElement;
         //   currentBarElement.style.backgroundColor = color;
@@ -74,19 +61,31 @@ export default class Visualizer {
         this.setMaxBars = ({ maxBars }) => {
             this.maxBars = maxBars;
         };
-        this.setSortSpeed = ({ sortSpeed }) => {
-            this.sortSpeed = sortSpeed;
+        this.setSortDelay = ({ sortDelay }) => {
+            this.sortDelay = sortDelay;
         };
         this.sort = ({ algorithm }) => {
             const args = {
                 bars: this.bars,
                 startingIndex: 0,
-                endingIndex: this.bars.length - 1
+                endingIndex: this.bars.length - 1,
+                visualizer: this
             };
             algorithm(args);
         };
+        this.resetBars = () => {
+            // Only merge sort can be reset by changing style.order. 
+            // All the other sorts actually change the order of the bar in place, 
+            // so this needs to be undone.
+            this.bars.sort((barA, barB) => {
+                return barA.originalOrder - barB.originalOrder;
+            }).forEach((bar, index) => {
+                this.bars[index].domElement.style.order = `${bar.originalOrder}`;
+                this.bars[index].domElement.classList.remove("sorted");
+            });
+        };
         this.maxBars = maxBars || 0;
-        this.sortSpeed = 100;
+        this.sortDelay = 1000;
         this.visualizerContainerQuery = visualizerContainerQuery;
     }
 }

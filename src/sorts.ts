@@ -1,14 +1,38 @@
-import { BarType } from "./visualizer";
+import Visualizer, { BarType } from "./visualizer";
 
 export interface PartitionBasedSortFunction {
-  ({ bars }: { bars: BarType[] }): void;
+  ({ bars, visualizer }: { bars: BarType[], visualizer: Visualizer }): Promise<void>;
 }
 
 export interface TranspositionSortFunction {
-  ({ bars, startingIndex, endingIndex }: { bars: BarType[], startingIndex: number, endingIndex: number }): void;
+  ({ bars, startingIndex, endingIndex, visualizer }: { bars: BarType[], startingIndex: number, endingIndex: number, visualizer: Visualizer }): Promise<void>;
 }
 
-export const bubbleSort = ({ bars }: { bars: BarType[] }): void => {
+const delay = ({ timeout }: { timeout: number }): Promise<TimerHandler> | undefined => {
+  if (timeout == 0) return;
+
+  return new Promise(resolve => {
+    setTimeout(() => resolve(''), timeout);
+  })
+}
+
+const colorSelectBars = ({ bars, indexes }: { bars: BarType[], indexes: number[] }): void => {
+  indexes.forEach(index => bars[index].domElement.classList.add("selected"));
+}
+
+const deColorSelectBars = ({ bars, indexes }: { bars: BarType[], indexes: number[] }): void => {
+  indexes.forEach(index => bars[index].domElement.classList.remove("selected"));
+}
+
+const colorSortedBars = ({ bars, indexes }: { bars: BarType[], indexes: number[] }): void => {
+  indexes.forEach(index => bars[index].domElement.classList.add("sorted"));
+}
+
+const deColorSortedBars = ({ bars, indexes }: { bars: BarType[], indexes: number[] }): void => {
+  indexes.forEach(index => bars[index].domElement.classList.remove("sorted"));
+}
+
+export const bubbleSort = async ({ bars, visualizer }: { bars: BarType[], visualizer: Visualizer }): Promise<void> => {
   const numberOfBars = bars.length;
 
   // The unsortedCount is the length of the part of the array that's not yet sorted
@@ -21,21 +45,45 @@ export const bubbleSort = ({ bars }: { bars: BarType[] }): void => {
     for (let index = 0; index < unsortedCount; index++) {
       const nextIndex = index + 1;
 
+      colorSelectBars({ bars, indexes: [index, nextIndex] });
+
+      await delay({ timeout: visualizer.sortDelay });
+
       if (bars[index].height > bars[nextIndex].height) {
-        switchBars({ bars: bars, i: index, j: nextIndex })
+        await switchBars({ bars: bars, i: index, j: nextIndex, visualizer })
       }
+
+      deColorSelectBars({ bars, indexes: [index, nextIndex] });
+    }
+
+    if (bars[unsortedCount].height > bars[unsortedCount - 1].height) {
+      colorSortedBars({ bars, indexes: [unsortedCount] });
+    } else {
+      colorSortedBars({ bars, indexes: [unsortedCount - 1] });
+    }
+
+    if (bars[unsortedCount].height == bars[unsortedCount - 1].height) {
+      colorSortedBars({ bars, indexes: [unsortedCount] });
     }
 
     unsortedCount--;
   }
+
+  colorSortedBars({ bars, indexes: [0] });
 }
 
 interface MergeType extends SortParamsType {
   pivot: number
 }
 
+const arrayRange = (start: number, stop: number, step = 1) => Array.from(
+  { length: (stop - start) / step + 1 },
+  (value, index) => start + index * step
+);
+
+
 // TODO: see if we can clean this up at all
-const merge = ({ bars, startingIndex, pivot, endingIndex }: MergeType): void => {
+const merge = async ({ bars, startingIndex, pivot, endingIndex, visualizer }: MergeType & { visualizer: Visualizer }): Promise<void> => {
   let leftArraySize = pivot - startingIndex + 1;
   let rightArraySize = endingIndex - pivot;
 
@@ -60,8 +108,9 @@ const merge = ({ bars, startingIndex, pivot, endingIndex }: MergeType): void => 
   rightArrayIndex = 0;
 
   // // Sort bars by left and right arrays
-  for (let currentIndex = startingIndex; currentIndex <= endingIndex; currentIndex++) {
+  deColorSortedBars({ bars, indexes: arrayRange(startingIndex, endingIndex) })
 
+  for (let currentIndex = startingIndex; currentIndex <= endingIndex; currentIndex++) {
     // Ensure that the indexes are in range
     if ((leftArrayIndex < leftArraySize) && (rightArrayIndex < rightArraySize)) {
       // If they are, assign the correct bar
@@ -85,18 +134,22 @@ const merge = ({ bars, startingIndex, pivot, endingIndex }: MergeType): void => 
     }
 
     bars[currentIndex].domElement.style.order = `${currentIndex}`
+
+    await delay({ timeout: visualizer.sortDelay });
+
+    colorSortedBars({ bars, indexes: [currentIndex] })
   }
 }
 
-export const mergeSort = ({ bars, startingIndex, endingIndex }: SortParamsType): void => {
+export const mergeSort = async ({ bars, startingIndex, endingIndex, visualizer }: SortParamsType & { visualizer: Visualizer }): Promise<void> => {
   // Base case. Nothing left to do here
   if (startingIndex == endingIndex) return;
 
   const pivot: number = Math.floor((startingIndex + endingIndex) / 2);
 
-  mergeSort({ bars, startingIndex, endingIndex: pivot })
-  mergeSort({ bars, startingIndex: pivot + 1, endingIndex })
-  merge({ bars, startingIndex, pivot, endingIndex })
+  await mergeSort({ bars, startingIndex, endingIndex: pivot, visualizer })
+  await mergeSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer })
+  await merge({ bars, startingIndex, pivot, endingIndex, visualizer })
 }
 
 interface SortParamsType {
@@ -105,59 +158,84 @@ interface SortParamsType {
   endingIndex: number
 }
 
-const partition = ({ bars, startingIndex, endingIndex }: SortParamsType): number => {
+const partition = async ({ bars, startingIndex, endingIndex, visualizer }: SortParamsType & { visualizer: Visualizer }): Promise<number> => {
   const pivot = bars[endingIndex]
   let i = startingIndex - 1;
 
   for (let currentIndex = startingIndex; currentIndex <= endingIndex - 1; currentIndex++) {
     if (bars[currentIndex].height < pivot.height) {
       i++;
-      switchBars({ bars, i, j: currentIndex })
+      await switchBars({ bars, i, j: currentIndex, visualizer })
     }
   }
 
   i++;
-  switchBars({ bars, i, j: endingIndex })
+  await switchBars({ bars, i, j: endingIndex, visualizer })
 
   return i;
 }
 
-export const quickSort = ({ bars, startingIndex, endingIndex }: SortParamsType): void => {
+export const quickSort = async ({ bars, startingIndex, endingIndex, visualizer }: SortParamsType & { visualizer: Visualizer }): Promise<void | undefined> => {
   // Base case. Nothing left to do here
   if (endingIndex <= startingIndex) return;
 
-  const pivot: number = partition({ bars, startingIndex, endingIndex });
+  const pivot: number = await partition({ bars, startingIndex, endingIndex, visualizer });
 
-  quickSort({ bars, startingIndex, endingIndex: pivot - 1 })
-  quickSort({ bars, startingIndex: pivot + 1, endingIndex })
+  await quickSort({ bars, startingIndex, endingIndex: pivot - 1, visualizer })
+  await quickSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer })
 }
 
-export const selectionSort = ({ bars }: { bars: BarType[] }): void => {
+export const selectionSort = async ({ bars, visualizer }: { bars: BarType[], visualizer: Visualizer }): Promise<void> => {
   const numberOfBars = bars.length;
 
   for (let currentIndex = 0; currentIndex < numberOfBars; currentIndex++) {
     let minIndex = currentIndex;
 
+    colorSelectBars({ bars, indexes: [currentIndex] });
+
     // Find the shortest bar in the unsorted array
     for (let unsortedIndex = currentIndex + 1; unsortedIndex < numberOfBars; unsortedIndex++) {
+
       if (bars[unsortedIndex].height < bars[minIndex].height) {
+        if (minIndex != currentIndex) {
+          deColorSelectBars({ bars, indexes: [minIndex] });
+        }
+
         minIndex = unsortedIndex;
+        colorSelectBars({ bars, indexes: [minIndex] });
+        await delay({ timeout: visualizer.sortDelay });
       }
     }
 
-    switchBars({ bars: bars, i: currentIndex, j: minIndex })
+    deColorSelectBars({ bars, indexes: [currentIndex, minIndex] });
+
+    await switchBars({ bars: bars, i: currentIndex, j: minIndex, visualizer })
+
+    colorSortedBars({ bars, indexes: [currentIndex] });
   }
 }
 
-const switchBars = ({ bars, i, j }: { bars: BarType[], i: number, j: number }) => {
+const colorSwapBars = ({ bars, indexes }: { bars: BarType[], indexes: number[] }): void => {
+  indexes.forEach(index => bars[index].domElement.classList.add("swapped"));
+}
+
+const deColorSwapBars = ({ bars, indexes }: { bars: BarType[], indexes: number[] }): void => {
+  indexes.forEach(index => bars[index].domElement.classList.remove("swapped"));
+}
+
+const switchBars = async ({ bars, i, j, visualizer }: { bars: BarType[], i: number, j: number, visualizer: Visualizer }) => {
+  colorSwapBars({ bars, indexes: [i, j] });
+
   const tempOrder = bars[i].domElement.style.order
   bars[i].domElement.style.order = bars[j].domElement.style.order
   bars[j].domElement.style.order = tempOrder
 
   // TODO: one way to delay for animations
-  // await delay();
+  await delay({ timeout: visualizer.sortDelay });
 
   const temp = bars[i]
   bars[i] = bars[j]
   bars[j] = temp
+
+  deColorSwapBars({ bars, indexes: [i, j] });
 }
