@@ -9,8 +9,6 @@ export interface TranspositionSortFunction {
 }
 
 const delay = ({ timeout }: { timeout: number }): Promise<TimerHandler> | undefined => {
-  if (timeout == 0) return;
-
   return new Promise(resolve => {
     setTimeout(() => resolve(''), timeout);
   })

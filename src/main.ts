@@ -136,13 +136,13 @@ const setVisualizer = (): Visualizer => {
 }
 
 const getSpeedLevelFromValue = ({ value }: { value: number }): string => {
-  if (value < 400) {
+  if (value < 1200) {
     return "Slowest";
-  } else if (value < 800) {
+  } else if (value < 1400) {
     return "Slower";
-  } else if (value < 1200) {
-    return "Normal";
   } else if (value < 1600) {
+    return "Normal";
+  } else if (value < 1800) {
     return "Faster";
   } else {
     return "Fastest";
