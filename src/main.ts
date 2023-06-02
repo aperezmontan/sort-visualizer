@@ -65,10 +65,8 @@ const resetBars = (): void | undefined => {
 }
 
 const resetVisualizerBars = () => {
-  const darkMode = darkModeToggle?.checked ? true : false;
-
   if (visualizer) {
-    visualizer.resetBars({ darkMode });
+    visualizer.resetBars();
   } else {
     alert("Visualizer is null")
   }

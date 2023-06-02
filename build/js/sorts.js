@@ -36,31 +36,23 @@ export const bubbleSort = ({ bars, visualizer }) => __awaiter(void 0, void 0, vo
         for (let index = 0; index < unsortedCount; index++) {
             const nextIndex = index + 1;
             colorSelectBars({ bars, indexes: [index, nextIndex] });
-            // bars[index].domElement.classList.add("selected")
-            // bars[nextIndex].domElement.classList.add("selected")
             yield delay({ timeout: visualizer.sortDelay });
             if (bars[index].height > bars[nextIndex].height) {
                 yield switchBars({ bars: bars, i: index, j: nextIndex, visualizer });
             }
-            // bars[index].domElement.classList.remove("selected")
-            // bars[nextIndex].domElement.classList.remove("selected")
             deColorSelectBars({ bars, indexes: [index, nextIndex] });
         }
         if (bars[unsortedCount].height > bars[unsortedCount - 1].height) {
             colorSortedBars({ bars, indexes: [unsortedCount] });
-            // bars[unsortedCount].domElement.classList.add("sorted");
         }
         else {
-            // bars[unsortedCount - 1].domElement.classList.add("sorted");
             colorSortedBars({ bars, indexes: [unsortedCount - 1] });
         }
         if (bars[unsortedCount].height == bars[unsortedCount - 1].height) {
             colorSortedBars({ bars, indexes: [unsortedCount] });
-            // bars[unsortedCount].domElement.classList.add("sorted");
         }
         unsortedCount--;
     }
-    // bars[0].domElement.classList.add("sorted");
     colorSortedBars({ bars, indexes: [0] });
 });
 const arrayRange = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
@@ -154,7 +146,6 @@ export const selectionSort = ({ bars, visualizer }) => __awaiter(void 0, void 0,
         colorSelectBars({ bars, indexes: [currentIndex] });
         // Find the shortest bar in the unsorted array
         for (let unsortedIndex = currentIndex + 1; unsortedIndex < numberOfBars; unsortedIndex++) {
-            // colorSelectBars({ bars, indexes: [unsortedIndex] });
             if (bars[unsortedIndex].height < bars[minIndex].height) {
                 if (minIndex != currentIndex) {
                     deColorSelectBars({ bars, indexes: [minIndex] });

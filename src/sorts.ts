@@ -1,11 +1,11 @@
 import Visualizer, { BarType } from "./visualizer";
 
 export interface PartitionBasedSortFunction {
-  ({ bars }: { bars: BarType[] }): void;
+  ({ bars, visualizer }: { bars: BarType[], visualizer: Visualizer }): Promise<void>;
 }
 
 export interface TranspositionSortFunction {
-  ({ bars, startingIndex, endingIndex }: { bars: BarType[], startingIndex: number, endingIndex: number }): void;
+  ({ bars, startingIndex, endingIndex, visualizer }: { bars: BarType[], startingIndex: number, endingIndex: number, visualizer: Visualizer }): Promise<void>;
 }
 
 const delay = ({ timeout }: { timeout: number }): Promise<TimerHandler> | undefined => {
@@ -47,37 +47,28 @@ export const bubbleSort = async ({ bars, visualizer }: { bars: BarType[], visual
 
       colorSelectBars({ bars, indexes: [index, nextIndex] });
 
-      // bars[index].domElement.classList.add("selected")
-      // bars[nextIndex].domElement.classList.add("selected")
-
       await delay({ timeout: visualizer.sortDelay });
 
       if (bars[index].height > bars[nextIndex].height) {
         await switchBars({ bars: bars, i: index, j: nextIndex, visualizer })
       }
 
-      // bars[index].domElement.classList.remove("selected")
-      // bars[nextIndex].domElement.classList.remove("selected")
       deColorSelectBars({ bars, indexes: [index, nextIndex] });
     }
 
     if (bars[unsortedCount].height > bars[unsortedCount - 1].height) {
       colorSortedBars({ bars, indexes: [unsortedCount] });
-      // bars[unsortedCount].domElement.classList.add("sorted");
     } else {
-      // bars[unsortedCount - 1].domElement.classList.add("sorted");
       colorSortedBars({ bars, indexes: [unsortedCount - 1] });
     }
 
     if (bars[unsortedCount].height == bars[unsortedCount - 1].height) {
       colorSortedBars({ bars, indexes: [unsortedCount] });
-      // bars[unsortedCount].domElement.classList.add("sorted");
     }
 
     unsortedCount--;
   }
 
-  // bars[0].domElement.classList.add("sorted");
   colorSortedBars({ bars, indexes: [0] });
 }
 
@@ -85,7 +76,7 @@ interface MergeType extends SortParamsType {
   pivot: number
 }
 
-const arrayRange = (start, stop, step = 1) => Array.from(
+const arrayRange = (start: number, stop: number, step = 1) => Array.from(
   { length: (stop - start) / step + 1 },
   (value, index) => start + index * step
 );
@@ -184,7 +175,7 @@ const partition = async ({ bars, startingIndex, endingIndex, visualizer }: SortP
   return i;
 }
 
-export const quickSort = async ({ bars, startingIndex, endingIndex, visualizer }: SortParamsType & { visualizer: Visualizer }): Promise<number | undefined> => {
+export const quickSort = async ({ bars, startingIndex, endingIndex, visualizer }: SortParamsType & { visualizer: Visualizer }): Promise<void | undefined> => {
   // Base case. Nothing left to do here
   if (endingIndex <= startingIndex) return;
 
@@ -204,7 +195,6 @@ export const selectionSort = async ({ bars, visualizer }: { bars: BarType[], vis
 
     // Find the shortest bar in the unsorted array
     for (let unsortedIndex = currentIndex + 1; unsortedIndex < numberOfBars; unsortedIndex++) {
-      // colorSelectBars({ bars, indexes: [unsortedIndex] });
 
       if (bars[unsortedIndex].height < bars[minIndex].height) {
         if (minIndex != currentIndex) {
