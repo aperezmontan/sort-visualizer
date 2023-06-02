@@ -68,22 +68,34 @@ button:disabled{
 }
 
 .sort-buttons-container {
-  display: flex;
-  justify-content: space-evenly;
-  gap: 1px;
   margin-top: .2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-gap: 1px;
 }
 
 .sort-buttons-container > button {
   flex: 1 1 0;
-  width: 0;
+  height: 3rem;
+}
+
+@media only screen and (min-width: 600px)  {
+  .sort-buttons-container {
+    display: flex;
+    gap: 1px;
+  }
+
+  .sort-buttons-container > button {
+    flex: 1 1 0;
+    height: 2rem;
+  }
 }
 
 .options-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0.5rem;
+  padding: 1rem 1.5rem;
 }
 
 .dark-mode-container {
@@ -105,9 +117,19 @@ button:disabled{
 }
 
 output.speed-description {
-  width: 100%;
-  text-align: center;
   font-weight: 100;
+  width: 100%;
+  text-align: right;
+}
+
+input#sort-speed {
+  padding-left: 5px;
+}
+
+@media only screen and (min-width: 600px)  {
+  input#sort-speed {
+    padding-left: 10px;
+  }
 }
 
 /* Dark Mode toggle from: https://redstapler.co/pure-css-minimal-dark-mode-toggle-button/ */
@@ -234,22 +256,80 @@ label.dark-mode-label, label.dark-mode-label:after {
   background-color: #f64fca;
 }
 
-/* .speed-description {
-  background: red;
-  color: white;
-  padding: 4px 12px;
-  position: absolute;
-  border-radius: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 2rem;
-} */
-/* .speed-description::after {
-  content: "";
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  background: red;
-  top: -1px;
-  left: 50%;
-} */
+/* Slider styles from https://www.smashingmagazine.com/2021/12/create-custom-range-input-consistent-browsers/ */
+
+/********** Range Input Styles **********/
+/*Range Reset*/
+input[type="range"] {
+  -webkit-appearance: none;
+   appearance: none;
+   background: transparent;
+   cursor: pointer;
+   width: 15rem;
+}
+
+/* Removes default focus */
+input[type="range"]:focus {
+ outline: none;
+}
+
+/***** Chrome, Safari, Opera and Edge Chromium styles *****/
+/* slider track */
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: white;
+  border-radius: 0.5rem;
+  height: 0.1rem;  
+}
+
+#visualizer.light-mode input[type="range"]::-webkit-slider-runnable-track {
+  background-color: black;
+}
+
+/* slider thumb */
+input[type="range"]::-webkit-slider-thumb {
+ -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  margin-top: -15px; /* Centers thumb on the track */
+  border-radius: 5px;
+  box-shadow: inset 0px 5px 15px rgba(0,0,0,0.4), inset 0px -5px 15px rgba(255,255,255,0.4);
+
+  /*custom styles*/
+  background-color: black;
+  height: 2rem;
+  width: 1rem;
+}
+
+input[type="range"]:focus::-webkit-slider-thumb {
+  border: 1px solid rgba(255,255,255,0.4);
+  outline-offset: 0.125rem; 
+}
+
+/******** Firefox styles ********/
+/* slider track */
+input[type="range"]::-moz-range-track {
+  background-color: white;
+  border-radius: 0.5rem;
+  height: 0.1rem;
+}
+
+#visualizer.light-mode input[type="range"]::-moz-range-track {
+  background-color: black;
+}
+
+/* slider thumb */
+input[type="range"]::-moz-range-thumb {
+  border: none; /*Removes extra border that FF applies*/
+  border-radius: 5px;
+  box-shadow: inset 0px 5px 15px rgba(0,0,0,0.4), inset 0px -5px 15px rgba(255,255,255,0.4);
+
+  /*custom styles*/
+  background-color: black;
+  height: 2rem;
+  width: 1rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+ border: 1px solid rgba(255,255,255,0.4);
+ outline-offset: 0.125rem; 
+}
+

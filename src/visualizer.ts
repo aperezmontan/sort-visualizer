@@ -100,30 +100,6 @@ export default class Visualizer {
     })
   }
 
-  // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
-  //   const currentBarElement = bars[index].domElement;
-  //   currentBarElement.style.backgroundColor = color;
-  // }
-
-  setMaxBars = ({ maxBars }: { maxBars: number }): void => {
-    this.maxBars = maxBars;
-  }
-
-  setSortDelay = ({ sortDelay }: { sortDelay: number }): void => {
-    this.sortDelay = sortDelay;
-  }
-
-  sort = ({ algorithm }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction }): void => {
-    const args = {
-      bars: this.bars,
-      startingIndex: 0,
-      endingIndex: this.bars.length - 1,
-      visualizer: this
-    }
-
-    algorithm(args);
-  }
-
   resetBars = (): void => {
     // Only merge sort can be reset by changing style.order. 
     // All the other sorts actually change the order of the bar in place, 
@@ -133,6 +109,27 @@ export default class Visualizer {
     }).forEach((bar: BarType, index: number) => {
       this.bars[index].domElement.style.order = `${bar.originalOrder}`;
       this.bars[index].domElement.classList.remove("sorted");
+    });
+  }
+
+  setMaxBars = ({ maxBars }: { maxBars: number }): void => {
+    this.maxBars = maxBars;
+  }
+
+  setSortDelay = ({ sortDelay }: { sortDelay: number }): void => {
+    this.sortDelay = sortDelay;
+  }
+
+  sort = ({ algorithm, callback }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction, callback: Function }): void => {
+    const args = {
+      bars: this.bars,
+      startingIndex: 0,
+      endingIndex: this.bars.length - 1,
+      visualizer: this
+    }
+
+    algorithm(args).then(() => {
+      callback()
     });
   }
 }

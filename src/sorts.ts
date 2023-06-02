@@ -9,8 +9,6 @@ export interface TranspositionSortFunction {
 }
 
 const delay = ({ timeout }: { timeout: number }): Promise<TimerHandler> | undefined => {
-  if (timeout == 0) return;
-
   return new Promise(resolve => {
     setTimeout(() => resolve(''), timeout);
   })
@@ -181,8 +179,18 @@ export const quickSort = async ({ bars, startingIndex, endingIndex, visualizer }
 
   const pivot: number = await partition({ bars, startingIndex, endingIndex, visualizer });
 
+  // pivot is always the sorted element
+  colorSortedBars({ bars, indexes: [pivot] });
+
+  const firstRange = arrayRange(startingIndex, pivot - 1);
+  deColorSortedBars({ bars, indexes: firstRange })
   await quickSort({ bars, startingIndex, endingIndex: pivot - 1, visualizer })
+  colorSortedBars({ bars, indexes: firstRange });
+
+  const secondRange = arrayRange(pivot + 1, endingIndex);
+  deColorSortedBars({ bars, indexes: secondRange })
   await quickSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer })
+  colorSortedBars({ bars, indexes: secondRange });
 }
 
 export const selectionSort = async ({ bars, visualizer }: { bars: BarType[], visualizer: Visualizer }): Promise<void> => {

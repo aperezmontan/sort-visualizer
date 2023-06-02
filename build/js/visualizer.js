@@ -54,25 +54,6 @@ export default class Visualizer {
                 return nextBarTaller;
             });
         };
-        // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
-        //   const currentBarElement = bars[index].domElement;
-        //   currentBarElement.style.backgroundColor = color;
-        // }
-        this.setMaxBars = ({ maxBars }) => {
-            this.maxBars = maxBars;
-        };
-        this.setSortDelay = ({ sortDelay }) => {
-            this.sortDelay = sortDelay;
-        };
-        this.sort = ({ algorithm }) => {
-            const args = {
-                bars: this.bars,
-                startingIndex: 0,
-                endingIndex: this.bars.length - 1,
-                visualizer: this
-            };
-            algorithm(args);
-        };
         this.resetBars = () => {
             // Only merge sort can be reset by changing style.order. 
             // All the other sorts actually change the order of the bar in place, 
@@ -82,6 +63,23 @@ export default class Visualizer {
             }).forEach((bar, index) => {
                 this.bars[index].domElement.style.order = `${bar.originalOrder}`;
                 this.bars[index].domElement.classList.remove("sorted");
+            });
+        };
+        this.setMaxBars = ({ maxBars }) => {
+            this.maxBars = maxBars;
+        };
+        this.setSortDelay = ({ sortDelay }) => {
+            this.sortDelay = sortDelay;
+        };
+        this.sort = ({ algorithm, callback }) => {
+            const args = {
+                bars: this.bars,
+                startingIndex: 0,
+                endingIndex: this.bars.length - 1,
+                visualizer: this
+            };
+            algorithm(args).then(() => {
+                callback();
             });
         };
         this.maxBars = maxBars || 0;

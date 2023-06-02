@@ -73,10 +73,14 @@ const resetVisualizerBars = () => {
 }
 /////////////////////////////////////
 
+const enableResetButton = (): void => {
+  resetBarsButton.removeAttribute("disabled");
+}
+
 // Running the sorts
 const runBubbleSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: bubbleSort });
+    visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -85,7 +89,7 @@ const runBubbleSort = (): void => {
 
 const runMergeSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: mergeSort });
+    visualizer.sort({ algorithm: mergeSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -94,7 +98,7 @@ const runMergeSort = (): void => {
 
 const runQuickSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: quickSort });
+    visualizer.sort({ algorithm: quickSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -103,7 +107,7 @@ const runQuickSort = (): void => {
 
 const runSelectionSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: selectionSort });
+    visualizer.sort({ algorithm: selectionSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -115,8 +119,6 @@ const runSelectionSort = (): void => {
 const setMaxBars = () => {
   const width = window.innerWidth;
   const maxBars = Math.floor(width / 3);
-
-  console.log("setting max bars")
 
   if (visualizer) {
     visualizer.setMaxBars({ maxBars });
@@ -136,13 +138,13 @@ const setVisualizer = (): Visualizer => {
 }
 
 const getSpeedLevelFromValue = ({ value }: { value: number }): string => {
-  if (value < 400) {
+  if (value < 1200) {
     return "Slowest";
-  } else if (value < 800) {
+  } else if (value < 1400) {
     return "Slower";
-  } else if (value < 1200) {
-    return "Normal";
   } else if (value < 1600) {
+    return "Normal";
+  } else if (value < 1800) {
     return "Faster";
   } else {
     return "Fastest";
@@ -154,7 +156,7 @@ const setSpeedDescription = (range: HTMLInputElement, speedDescription: HTMLOutp
   speedDescription.innerHTML = getSpeedLevelFromValue({ value });
 }
 
-const setSortDelay = (e: MouseEvent): void => {
+const setSortDelay = (e: MouseEvent | TouchEvent): void => {
   console.log("slide value", (<HTMLInputElement>e.target).value)
   const value = parseInt((<HTMLInputElement>e.target).value)
 
@@ -166,9 +168,9 @@ const setSortDelay = (e: MouseEvent): void => {
   }
 }
 
-const setDarkMode = (e): void => {
+const setDarkMode = (e: MouseEvent): void => {
   if (visualizerDomElement && e.target) {
-    if (e.target.checked) {
+    if ((<HTMLInputElement>e.target).checked) {
       visualizerDomElement.classList.remove("light-mode");
     } else {
       visualizerDomElement.classList.add("light-mode");
@@ -198,6 +200,7 @@ const setSortingCapability = ({ allowSorting }: { allowSorting: boolean }): void
   } else {
     toggleBarButtons({ canGenerateBars: false });
     buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+    resetBarsButton?.setAttribute("disabled", "disabled");
   }
 }
 
@@ -237,6 +240,7 @@ generateNewBarsButton?.addEventListener("click", () => generateNewBars());
 resetBarsButton?.addEventListener("click", () => resetBars());
 darkModeToggle?.addEventListener("click", (e) => setDarkMode(e));
 slider.addEventListener("mouseup", (e) => setSortDelay(e));
+slider.addEventListener("touchend", (e) => setSortDelay(e));
 
 document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
 document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());
