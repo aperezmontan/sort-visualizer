@@ -2,7 +2,12 @@ import Visualizer from "./visualizer.js";
 import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 
 let visualizer: Visualizer | null = null;
-const visualizerDomElement = document.getElementById('visualizer');
+const visualizerDomElement = <HTMLDivElement>document.getElementById('visualizer');
+const generateNewBarsButton = <HTMLButtonElement>document.getElementById('generate-bars')
+const resetBarsButton = <HTMLButtonElement>document.getElementById('reset-bars')
+const darkModeToggle = <HTMLInputElement>document.getElementById('dark-mode');
+const slider = <HTMLInputElement>document.getElementById('sort-speed');
+const speedDescription = <HTMLOutputElement>document.getElementById('sort-speed-description');
 
 const debounce = (callback: Function, delay: number = 300): Function => {
   let timeout: ReturnType<typeof setTimeout>;
@@ -32,23 +37,6 @@ const isSorted = (): boolean => {
 }
 
 // Generating and resetting bars
-const resetBars = (): void | undefined => {
-  if (isSorted()) {
-    unsortBars();
-    setSortingCapability({ allowSorting: true });
-  } else {
-    console.log("Already reset");
-  }
-}
-
-const unsortBars = () => {
-  if (visualizer) {
-    visualizer.unsortBars();
-  } else {
-    alert("Visualizer is null")
-  }
-}
-
 const generateBars = () => {
   if (visualizer) {
     const numberOfBars = visualizer.generateBars();
@@ -64,6 +52,25 @@ const generateNewBars = (): void | undefined => {
     setSortingCapability({ allowSorting: true });
   } else {
     console.log("Sorted!");
+  }
+}
+
+const resetBars = (): void | undefined => {
+  if (isSorted()) {
+    resetVisualizerBars();
+    setSortingCapability({ allowSorting: true });
+  } else {
+    console.log("Already reset");
+  }
+}
+
+const resetVisualizerBars = () => {
+  const darkMode = darkModeToggle?.checked ? true : false;
+
+  if (visualizer) {
+    visualizer.resetBars({ darkMode });
+  } else {
+    alert("Visualizer is null")
   }
 }
 /////////////////////////////////////
@@ -130,20 +137,35 @@ const setVisualizer = (): Visualizer => {
   return visualizer;
 }
 
-const bubble = <HTMLOutputElement>document.getElementById('sort-speed-bubble');
-const slider = <HTMLInputElement>document.getElementById('sort-speed');
+const getSpeedLevelFromValue = ({ value }: { value: number }): string => {
+  if (value < 400) {
+    return "Slowest";
+  } else if (value < 800) {
+    return "Slower";
+  } else if (value < 1200) {
+    return "Normal";
+  } else if (value < 1600) {
+    return "Faster";
+  } else {
+    return "Fastest";
+  }
+}
 
-const setBubble = (range: HTMLInputElement, bubble: HTMLOutputElement) => {
-  const val = range.value;
-  const min = range.min ? range.min : 0;
-  const max = range.max ? range.max : 100;
-  const newVal = Number(((val - min) * 100) / (max - min));
-  bubble.innerHTML = val;
+const setSpeedDescription = (range: HTMLInputElement, speedDescription: HTMLOutputElement): void => {
+  const value = parseInt(range.value);
+  speedDescription.innerHTML = getSpeedLevelFromValue({ value });
+}
 
-  // Sorta magic numbers based on size of the native UI thumb
-  bubble.style.left = `calc(${newVal}% + (${8 - newVal * 0.15}px))`;
+const setSortDelay = (e: MouseEvent): void => {
+  console.log("slide value", (<HTMLInputElement>e.target).value)
+  const value = parseInt((<HTMLInputElement>e.target).value)
 
-  return debounce(setSortSpeed);
+  if (!isNaN(value) && visualizer) {
+    const sortDelay = 2000 - value;
+    visualizer.setSortDelay({ sortDelay });
+  } else {
+    alert("Visualizer is null")
+  }
 }
 
 const setDarkMode = (e): void => {
@@ -155,21 +177,6 @@ const setDarkMode = (e): void => {
     }
   } else {
     console.log("Visualizer DOM element not found")
-  }
-}
-
-const setSortSpeed = (): void => {
-  // TODO: Not sure how else to do this. Debounce won't pass event 
-  // into this function. See if you can improve
-  console.log("slide value", slider.value)
-  const value = parseInt(slider.value)
-
-  if (!isNaN(value) && visualizer) {
-    const sortSpeed = 1000 - value;
-    console.log("setting sort speed to", sortSpeed, "ms")
-    visualizer.setSortSpeed({ sortSpeed });
-  } else {
-    alert("Visualizer is null")
   }
 }
 
@@ -228,21 +235,16 @@ document.addEventListener("DOMContentLoaded", () => {
   setSortingCapability({ allowSorting: true });
 });
 
-const generateNewBarsButton = document.getElementById('generate-bars')
 generateNewBarsButton?.addEventListener("click", () => generateNewBars());
-const resetBarsButton = document.getElementById('reset-bars')
 resetBarsButton?.addEventListener("click", () => resetBars());
+darkModeToggle?.addEventListener("click", (e) => setDarkMode(e));
+slider.addEventListener("mouseup", (e) => setSortDelay(e));
 
 document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
-document.getElementById('dark-mode')?.addEventListener("click", (e) => setDarkMode(e));
 document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());
 document.getElementById('quick-sort')?.addEventListener("click", () => runQuickSort());
 document.getElementById('selection-sort')?.addEventListener("click", () => runSelectionSort());
-document.getElementById('sort-speed')?.addEventListener(
-  "input",
-  // TODO: Look into this error
-  () => setBubble(slider, bubble)
-);
+document.getElementById('sort-speed')?.addEventListener("input", () => setSpeedDescription(slider, speedDescription));
 
 // Set the max number of bars based on the screen width
 window.addEventListener(

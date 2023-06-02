@@ -17,19 +17,13 @@ import { PartitionBasedSortFunction, TranspositionSortFunction } from "./sorts";
 export default class Visualizer {
   bars: BarType[] = [];
   maxBars: number;
-  sortSpeed: number;
+  sortDelay: number;
   visualizerContainerQuery: HTMLCollectionOf<Element>;
 
   constructor({ maxBars, visualizerContainerQuery }: { maxBars?: number, styleObj?: StyleType, visualizerContainerQuery: HTMLCollectionOf<Element> }) {
     this.maxBars = maxBars || 0;
-    this.sortSpeed = 100;
+    this.sortDelay = 1000;
     this.visualizerContainerQuery = visualizerContainerQuery;
-  }
-
-  delay = (): Promise<TimerHandler> => {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(''), this.sortSpeed);
-    })
   }
 
   generateBars = (): number | null => {
@@ -106,14 +100,6 @@ export default class Visualizer {
     })
   }
 
-  unsortBars = (): void => {
-    // Only merge sort can be reset by changing style.order. 
-    // All the other sorts actually change the order of the bar in place, 
-    // so this needs to be undone.
-    this.bars.sort((barA: BarType, barB: BarType) => {
-      return barA.originalOrder - barB.originalOrder;
-    }).forEach((bar: BarType, index: number) => this.bars[index].domElement.style.order = `${bar.originalOrder}`);
-  }
   // setCurrentBarColor = ({ bars = this.bars, index, color }) => {
   //   const currentBarElement = bars[index].domElement;
   //   currentBarElement.style.backgroundColor = color;
@@ -123,17 +109,30 @@ export default class Visualizer {
     this.maxBars = maxBars;
   }
 
-  setSortSpeed = ({ sortSpeed }: { sortSpeed: number }): void => {
-    this.sortSpeed = sortSpeed;
+  setSortDelay = ({ sortDelay }: { sortDelay: number }): void => {
+    this.sortDelay = sortDelay;
   }
 
   sort = ({ algorithm }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction }): void => {
     const args = {
       bars: this.bars,
       startingIndex: 0,
-      endingIndex: this.bars.length - 1
+      endingIndex: this.bars.length - 1,
+      visualizer: this
     }
 
     algorithm(args);
+  }
+
+  resetBars = (): void => {
+    // Only merge sort can be reset by changing style.order. 
+    // All the other sorts actually change the order of the bar in place, 
+    // so this needs to be undone.
+    this.bars.sort((barA: BarType, barB: BarType) => {
+      return barA.originalOrder - barB.originalOrder;
+    }).forEach((bar: BarType, index: number) => {
+      this.bars[index].domElement.style.order = `${bar.originalOrder}`;
+      this.bars[index].domElement.classList.remove("sorted");
+    });
   }
 }
