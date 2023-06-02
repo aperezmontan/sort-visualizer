@@ -134,8 +134,16 @@ export const quickSort = ({ bars, startingIndex, endingIndex, visualizer }) => _
     if (endingIndex <= startingIndex)
         return;
     const pivot = yield partition({ bars, startingIndex, endingIndex, visualizer });
+    // pivot is always the sorted element
+    colorSortedBars({ bars, indexes: [pivot] });
+    const firstRange = arrayRange(startingIndex, pivot - 1);
+    deColorSortedBars({ bars, indexes: firstRange });
     yield quickSort({ bars, startingIndex, endingIndex: pivot - 1, visualizer });
+    colorSortedBars({ bars, indexes: firstRange });
+    const secondRange = arrayRange(pivot + 1, endingIndex);
+    deColorSortedBars({ bars, indexes: secondRange });
     yield quickSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer });
+    colorSortedBars({ bars, indexes: secondRange });
 });
 export const selectionSort = ({ bars, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
     const numberOfBars = bars.length;
