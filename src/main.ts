@@ -154,7 +154,7 @@ const setSpeedDescription = (range: HTMLInputElement, speedDescription: HTMLOutp
   speedDescription.innerHTML = getSpeedLevelFromValue({ value });
 }
 
-const setSortDelay = (e: MouseEvent): void => {
+const setSortDelay = (e: MouseEvent | TouchEvent): void => {
   console.log("slide value", (<HTMLInputElement>e.target).value)
   const value = parseInt((<HTMLInputElement>e.target).value)
 
@@ -166,9 +166,9 @@ const setSortDelay = (e: MouseEvent): void => {
   }
 }
 
-const setDarkMode = (e): void => {
+const setDarkMode = (e: MouseEvent): void => {
   if (visualizerDomElement && e.target) {
-    if (e.target.checked) {
+    if ((<HTMLInputElement>e.target).checked) {
       visualizerDomElement.classList.remove("light-mode");
     } else {
       visualizerDomElement.classList.add("light-mode");
@@ -237,6 +237,7 @@ generateNewBarsButton?.addEventListener("click", () => generateNewBars());
 resetBarsButton?.addEventListener("click", () => resetBars());
 darkModeToggle?.addEventListener("click", (e) => setDarkMode(e));
 slider.addEventListener("mouseup", (e) => setSortDelay(e));
+slider.addEventListener("touchend", (e) => setSortDelay(e));
 
 document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
 document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());

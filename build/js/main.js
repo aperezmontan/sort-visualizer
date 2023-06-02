@@ -224,6 +224,7 @@ generateNewBarsButton === null || generateNewBarsButton === void 0 ? void 0 : ge
 resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButton.addEventListener("click", () => resetBars());
 darkModeToggle === null || darkModeToggle === void 0 ? void 0 : darkModeToggle.addEventListener("click", (e) => setDarkMode(e));
 slider.addEventListener("mouseup", (e) => setSortDelay(e));
+slider.addEventListener("touchend", (e) => setSortDelay(e));
 (_a = document.getElementById('bubble-sort')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => runBubbleSort());
 (_b = document.getElementById('merge-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => runMergeSort());
 (_c = document.getElementById('quick-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => runQuickSort());
