@@ -73,10 +73,14 @@ const resetVisualizerBars = () => {
 }
 /////////////////////////////////////
 
+const enableResetButton = (): void => {
+  resetBarsButton.removeAttribute("disabled");
+}
+
 // Running the sorts
 const runBubbleSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: bubbleSort });
+    visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -85,7 +89,7 @@ const runBubbleSort = (): void => {
 
 const runMergeSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: mergeSort });
+    visualizer.sort({ algorithm: mergeSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -94,7 +98,7 @@ const runMergeSort = (): void => {
 
 const runQuickSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: quickSort });
+    visualizer.sort({ algorithm: quickSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -103,7 +107,7 @@ const runQuickSort = (): void => {
 
 const runSelectionSort = (): void => {
   if (visualizer) {
-    visualizer.sort({ algorithm: selectionSort });
+    visualizer.sort({ algorithm: selectionSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     alert("Visualizer is null")
@@ -115,8 +119,6 @@ const runSelectionSort = (): void => {
 const setMaxBars = () => {
   const width = window.innerWidth;
   const maxBars = Math.floor(width / 3);
-
-  console.log("setting max bars")
 
   if (visualizer) {
     visualizer.setMaxBars({ maxBars });
@@ -198,6 +200,7 @@ const setSortingCapability = ({ allowSorting }: { allowSorting: boolean }): void
   } else {
     toggleBarButtons({ canGenerateBars: false });
     buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+    resetBarsButton?.setAttribute("disabled", "disabled");
   }
 }
 

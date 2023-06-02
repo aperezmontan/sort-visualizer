@@ -120,7 +120,7 @@ export default class Visualizer {
     this.sortDelay = sortDelay;
   }
 
-  sort = ({ algorithm }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction }): void => {
+  sort = ({ algorithm, callback }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction, callback: Function }): void => {
     const args = {
       bars: this.bars,
       startingIndex: 0,
@@ -128,6 +128,8 @@ export default class Visualizer {
       visualizer: this
     }
 
-    algorithm(args);
+    algorithm(args).then(() => {
+      callback()
+    });
   }
 }

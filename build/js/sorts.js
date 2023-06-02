@@ -8,8 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const delay = ({ timeout }) => {
-    if (timeout == 0)
-        return;
     return new Promise(resolve => {
         setTimeout(() => resolve(''), timeout);
     });

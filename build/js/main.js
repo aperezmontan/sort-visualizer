@@ -66,10 +66,13 @@ const resetVisualizerBars = () => {
     }
 };
 /////////////////////////////////////
+const enableResetButton = () => {
+    resetBarsButton.removeAttribute("disabled");
+};
 // Running the sorts
 const runBubbleSort = () => {
     if (visualizer) {
-        visualizer.sort({ algorithm: bubbleSort });
+        visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
         setSortingCapability({ allowSorting: false });
     }
     else {
@@ -78,7 +81,7 @@ const runBubbleSort = () => {
 };
 const runMergeSort = () => {
     if (visualizer) {
-        visualizer.sort({ algorithm: mergeSort });
+        visualizer.sort({ algorithm: mergeSort, callback: enableResetButton });
         setSortingCapability({ allowSorting: false });
     }
     else {
@@ -87,7 +90,7 @@ const runMergeSort = () => {
 };
 const runQuickSort = () => {
     if (visualizer) {
-        visualizer.sort({ algorithm: quickSort });
+        visualizer.sort({ algorithm: quickSort, callback: enableResetButton });
         setSortingCapability({ allowSorting: false });
     }
     else {
@@ -96,7 +99,7 @@ const runQuickSort = () => {
 };
 const runSelectionSort = () => {
     if (visualizer) {
-        visualizer.sort({ algorithm: selectionSort });
+        visualizer.sort({ algorithm: selectionSort, callback: enableResetButton });
         setSortingCapability({ allowSorting: false });
     }
     else {
@@ -108,7 +111,6 @@ const runSelectionSort = () => {
 const setMaxBars = () => {
     const width = window.innerWidth;
     const maxBars = Math.floor(width / 3);
-    console.log("setting max bars");
     if (visualizer) {
         visualizer.setMaxBars({ maxBars });
         writeMetric({ metric: width, metricClassName: "window-width", metricTitle: "Width" });
@@ -125,16 +127,16 @@ const setVisualizer = () => {
     return visualizer;
 };
 const getSpeedLevelFromValue = ({ value }) => {
-    if (value < 400) {
+    if (value < 1200) {
         return "Slowest";
     }
-    else if (value < 800) {
+    else if (value < 1400) {
         return "Slower";
     }
-    else if (value < 1200) {
+    else if (value < 1600) {
         return "Normal";
     }
-    else if (value < 1600) {
+    else if (value < 1800) {
         return "Faster";
     }
     else {
@@ -188,6 +190,7 @@ const setSortingCapability = ({ allowSorting }) => {
     else {
         toggleBarButtons({ canGenerateBars: false });
         buttons.forEach(button => button && button.setAttribute("disabled", "disabled"));
+        resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButton.setAttribute("disabled", "disabled");
     }
 };
 const toggleBarButtons = ({ canGenerateBars }) => {

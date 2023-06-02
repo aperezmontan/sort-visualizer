@@ -71,14 +71,16 @@ export default class Visualizer {
         this.setSortDelay = ({ sortDelay }) => {
             this.sortDelay = sortDelay;
         };
-        this.sort = ({ algorithm }) => {
+        this.sort = ({ algorithm, callback }) => {
             const args = {
                 bars: this.bars,
                 startingIndex: 0,
                 endingIndex: this.bars.length - 1,
                 visualizer: this
             };
-            algorithm(args);
+            algorithm(args).then(() => {
+                callback();
+            });
         };
         this.maxBars = maxBars || 0;
         this.sortDelay = 1000;
