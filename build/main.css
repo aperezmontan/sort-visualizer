@@ -37,6 +37,11 @@ button:disabled{
   }
 }
 
+.sort-speed-title {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
 #visualizer {
   display: flex;
   flex-direction: column;
@@ -104,10 +109,10 @@ button:disabled{
 }
 
 .sort-speed-container {
-  display: flex;
-  position: relative;
+  /* display: flex;
+  position: relative; */
   width: 60%;
-  justify-content: space-evenly;
+  /* justify-content: space-evenly; */
 }
 
 @media only screen and (min-width: 600px)  {
@@ -117,9 +122,18 @@ button:disabled{
 }
 
 output.speed-description {
+  padding-top: 5px;
   font-weight: 100;
   width: 100%;
   text-align: right;
+  position: absolute;
+  left: -120px;
+}
+
+@media only screen and (min-width: 600px)  {
+  output.speed-description {
+    font-size: smaller;
+  }
 }
 
 input#sort-speed {
