@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const delay = ({ timeout }) => {
     return new Promise(resolve => {
         setTimeout(() => resolve(''), timeout);
@@ -24,7 +15,7 @@ const colorSortedBars = ({ bars, indexes }) => {
 const deColorSortedBars = ({ bars, indexes }) => {
     indexes.forEach(index => bars[index].domElement.classList.remove("sorted"));
 };
-export const bubbleSort = ({ bars, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+export const bubbleSort = async ({ bars, visualizer }) => {
     const numberOfBars = bars.length;
     // The unsortedCount is the length of the part of the array that's not yet sorted
     let unsortedCount = numberOfBars - 1;
@@ -34,9 +25,9 @@ export const bubbleSort = ({ bars, visualizer }) => __awaiter(void 0, void 0, vo
         for (let index = 0; index < unsortedCount; index++) {
             const nextIndex = index + 1;
             colorSelectBars({ bars, indexes: [index, nextIndex] });
-            yield delay({ timeout: visualizer.sortDelay });
+            await delay({ timeout: visualizer.sortDelay });
             if (bars[index].height > bars[nextIndex].height) {
-                yield switchBars({ bars: bars, i: index, j: nextIndex, visualizer });
+                await switchBars({ bars: bars, i: index, j: nextIndex, visualizer });
             }
             deColorSelectBars({ bars, indexes: [index, nextIndex] });
         }
@@ -52,10 +43,10 @@ export const bubbleSort = ({ bars, visualizer }) => __awaiter(void 0, void 0, vo
         unsortedCount--;
     }
     colorSortedBars({ bars, indexes: [0] });
-});
-const arrayRange = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1 }, (value, index) => start + index * step);
+};
+const arrayRange = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1 }, (_value, index) => start + index * step);
 // TODO: see if we can clean this up at all
-const merge = ({ bars, startingIndex, pivot, endingIndex, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+const merge = async ({ bars, startingIndex, pivot, endingIndex, visualizer }) => {
     let leftArraySize = pivot - startingIndex + 1;
     let rightArraySize = endingIndex - pivot;
     // Create temp arrays
@@ -103,49 +94,49 @@ const merge = ({ bars, startingIndex, pivot, endingIndex, visualizer }) => __awa
             rightArrayIndex++;
         }
         bars[currentIndex].domElement.style.order = `${currentIndex}`;
-        yield delay({ timeout: visualizer.sortDelay });
+        await delay({ timeout: visualizer.sortDelay });
         colorSortedBars({ bars, indexes: [currentIndex] });
     }
-});
-export const mergeSort = ({ bars, startingIndex, endingIndex, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+};
+export const mergeSort = async ({ bars, startingIndex, endingIndex, visualizer }) => {
     // Base case. Nothing left to do here
     if (startingIndex == endingIndex)
         return;
     const pivot = Math.floor((startingIndex + endingIndex) / 2);
-    yield mergeSort({ bars, startingIndex, endingIndex: pivot, visualizer });
-    yield mergeSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer });
-    yield merge({ bars, startingIndex, pivot, endingIndex, visualizer });
-});
-const partition = ({ bars, startingIndex, endingIndex, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+    await mergeSort({ bars, startingIndex, endingIndex: pivot, visualizer });
+    await mergeSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer });
+    await merge({ bars, startingIndex, pivot, endingIndex, visualizer });
+};
+const partition = async ({ bars, startingIndex, endingIndex, visualizer }) => {
     const pivot = bars[endingIndex];
     let i = startingIndex - 1;
     for (let currentIndex = startingIndex; currentIndex <= endingIndex - 1; currentIndex++) {
         if (bars[currentIndex].height < pivot.height) {
             i++;
-            yield switchBars({ bars, i, j: currentIndex, visualizer });
+            await switchBars({ bars, i, j: currentIndex, visualizer });
         }
     }
     i++;
-    yield switchBars({ bars, i, j: endingIndex, visualizer });
+    await switchBars({ bars, i, j: endingIndex, visualizer });
     return i;
-});
-export const quickSort = ({ bars, startingIndex, endingIndex, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+};
+export const quickSort = async ({ bars, startingIndex, endingIndex, visualizer }) => {
     // Base case. Nothing left to do here
     if (endingIndex <= startingIndex)
         return;
-    const pivot = yield partition({ bars, startingIndex, endingIndex, visualizer });
+    const pivot = await partition({ bars, startingIndex, endingIndex, visualizer });
     // pivot is always the sorted element
     colorSortedBars({ bars, indexes: [pivot] });
     const firstRange = arrayRange(startingIndex, pivot - 1);
     deColorSortedBars({ bars, indexes: firstRange });
-    yield quickSort({ bars, startingIndex, endingIndex: pivot - 1, visualizer });
+    await quickSort({ bars, startingIndex, endingIndex: pivot - 1, visualizer });
     colorSortedBars({ bars, indexes: firstRange });
     const secondRange = arrayRange(pivot + 1, endingIndex);
     deColorSortedBars({ bars, indexes: secondRange });
-    yield quickSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer });
+    await quickSort({ bars, startingIndex: pivot + 1, endingIndex, visualizer });
     colorSortedBars({ bars, indexes: secondRange });
-});
-export const selectionSort = ({ bars, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+};
+export const selectionSort = async ({ bars, visualizer }) => {
     const numberOfBars = bars.length;
     for (let currentIndex = 0; currentIndex < numberOfBars; currentIndex++) {
         let minIndex = currentIndex;
@@ -158,29 +149,29 @@ export const selectionSort = ({ bars, visualizer }) => __awaiter(void 0, void 0,
                 }
                 minIndex = unsortedIndex;
                 colorSelectBars({ bars, indexes: [minIndex] });
-                yield delay({ timeout: visualizer.sortDelay });
+                await delay({ timeout: visualizer.sortDelay });
             }
         }
         deColorSelectBars({ bars, indexes: [currentIndex, minIndex] });
-        yield switchBars({ bars: bars, i: currentIndex, j: minIndex, visualizer });
+        await switchBars({ bars: bars, i: currentIndex, j: minIndex, visualizer });
         colorSortedBars({ bars, indexes: [currentIndex] });
     }
-});
+};
 const colorSwapBars = ({ bars, indexes }) => {
     indexes.forEach(index => bars[index].domElement.classList.add("swapped"));
 };
 const deColorSwapBars = ({ bars, indexes }) => {
     indexes.forEach(index => bars[index].domElement.classList.remove("swapped"));
 };
-const switchBars = ({ bars, i, j, visualizer }) => __awaiter(void 0, void 0, void 0, function* () {
+const switchBars = async ({ bars, i, j, visualizer }) => {
     colorSwapBars({ bars, indexes: [i, j] });
     const tempOrder = bars[i].domElement.style.order;
     bars[i].domElement.style.order = bars[j].domElement.style.order;
     bars[j].domElement.style.order = tempOrder;
     // TODO: one way to delay for animations
-    yield delay({ timeout: visualizer.sortDelay });
+    await delay({ timeout: visualizer.sortDelay });
     const temp = bars[i];
     bars[i] = bars[j];
     bars[j] = temp;
     deColorSwapBars({ bars, indexes: [i, j] });
-});
+};

@@ -65,7 +65,7 @@ export default class Visualizer {
   }
 
   getRandomBarValues = (): BarValueType[] => {
-    return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x, originalOrder: number) => {
+    return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (_x, originalOrder: number) => {
       const height = this.getRandomNumberBetween(1, this.maxBars);
       const heightPercentOfViewport = height / this.maxBars * 100;
 

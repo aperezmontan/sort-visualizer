@@ -1,6 +1,10 @@
 var _a, _b, _c, _d, _e;
 import Visualizer from "./visualizer.js";
 import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
+const BUBBLE_SORT_NAME = 'bubbleSort';
+const MERGE_SORT_NAME = 'mergeSort';
+const QUICK_SORT_NAME = 'quickSort';
+const SELECTION_SORT_NAME = 'selectionSort';
 let visualizer = null;
 const visualizerDomElement = document.getElementById('visualizer');
 const generateNewBarsButton = document.getElementById('generate-bars');
@@ -70,44 +74,32 @@ const enableResetButton = () => {
     resetBarsButton.removeAttribute("disabled");
 };
 // Running the sorts
-const runBubbleSort = () => {
-    if (visualizer) {
+const getAlgorithm = ({ algorithmName }) => {
+    switch (algorithmName) {
+        case BUBBLE_SORT_NAME:
+            return bubbleSort;
+        case MERGE_SORT_NAME:
+            return mergeSort;
+        case QUICK_SORT_NAME:
+            return quickSort;
+        case SELECTION_SORT_NAME:
+            return selectionSort;
+        default:
+            return null;
+    }
+};
+const runSort = ({ algorithmName }) => {
+    const algorithm = getAlgorithm({ algorithmName });
+    if (visualizer && algorithm) {
         visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
         setSortingCapability({ allowSorting: false });
     }
     else {
-        alert("Visualizer is null");
-    }
-};
-const runMergeSort = () => {
-    if (visualizer) {
-        visualizer.sort({ algorithm: mergeSort, callback: enableResetButton });
-        setSortingCapability({ allowSorting: false });
-    }
-    else {
-        alert("Visualizer is null");
-    }
-};
-const runQuickSort = () => {
-    if (visualizer) {
-        visualizer.sort({ algorithm: quickSort, callback: enableResetButton });
-        setSortingCapability({ allowSorting: false });
-    }
-    else {
-        alert("Visualizer is null");
-    }
-};
-const runSelectionSort = () => {
-    if (visualizer) {
-        visualizer.sort({ algorithm: selectionSort, callback: enableResetButton });
-        setSortingCapability({ allowSorting: false });
-    }
-    else {
-        alert("Visualizer is null");
+        console.log("We've had a problem :/");
     }
 };
 ///////////////////////////////////////////////////
-// DOM setup
+// Front end viewing options
 const setMaxBars = () => {
     const width = window.innerWidth;
     const maxBars = Math.floor(width / 3);
@@ -203,6 +195,7 @@ const toggleBarButtons = ({ canGenerateBars }) => {
         resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButton.removeAttribute("hidden");
     }
 };
+//////////////////////////////////////////////////////////////
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }) => {
     if (metric) {
@@ -228,10 +221,10 @@ resetBarsButton === null || resetBarsButton === void 0 ? void 0 : resetBarsButto
 darkModeToggle === null || darkModeToggle === void 0 ? void 0 : darkModeToggle.addEventListener("click", (e) => setDarkMode(e));
 slider.addEventListener("mouseup", (e) => setSortDelay(e));
 slider.addEventListener("touchend", (e) => setSortDelay(e));
-(_a = document.getElementById('bubble-sort')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => runBubbleSort());
-(_b = document.getElementById('merge-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => runMergeSort());
-(_c = document.getElementById('quick-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => runQuickSort());
-(_d = document.getElementById('selection-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => runSelectionSort());
+(_a = document.getElementById('bubble-sort')) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => runSort({ algorithmName: BUBBLE_SORT_NAME }));
+(_b = document.getElementById('merge-sort')) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => runSort({ algorithmName: MERGE_SORT_NAME }));
+(_c = document.getElementById('quick-sort')) === null || _c === void 0 ? void 0 : _c.addEventListener("click", () => runSort({ algorithmName: QUICK_SORT_NAME }));
+(_d = document.getElementById('selection-sort')) === null || _d === void 0 ? void 0 : _d.addEventListener("click", () => runSort({ algorithmName: SELECTION_SORT_NAME }));
 (_e = document.getElementById('sort-speed')) === null || _e === void 0 ? void 0 : _e.addEventListener("input", () => setSpeedDescription(slider, speedDescription));
 // Set the max number of bars based on the screen width
 window.addEventListener("resize", 

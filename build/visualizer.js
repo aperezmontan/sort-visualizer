@@ -16,7 +16,10 @@ export default class Visualizer {
                     domElement.className = "bar";
                     domElement.style.height = `${heightPercentOfViewport}%`;
                     domElement.style.order = `${index}`;
-                    const bar = Object.assign({ domElement }, barValue);
+                    const bar = {
+                        domElement,
+                        ...barValue
+                    };
                     return bar;
                 });
                 // Put bars on the DOM
@@ -26,7 +29,7 @@ export default class Visualizer {
             return null;
         };
         this.getRandomBarValues = () => {
-            return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (x, originalOrder) => {
+            return Array.from({ length: this.getRandomNumberBetween(1, this.maxBars) }, (_x, originalOrder) => {
                 const height = this.getRandomNumberBetween(1, this.maxBars);
                 const heightPercentOfViewport = height / this.maxBars * 100;
                 return {
