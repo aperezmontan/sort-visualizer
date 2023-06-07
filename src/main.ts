@@ -1,6 +1,11 @@
 import Visualizer from "./visualizer.js";
 import { bubbleSort, mergeSort, quickSort, selectionSort } from "./sorts.js";
 
+const BUBBLE_SORT_NAME = 'bubbleSort';
+const MERGE_SORT_NAME = 'mergeSort';
+const QUICK_SORT_NAME = 'quickSort';
+const SELECTION_SORT_NAME = 'selectionSort';
+
 let visualizer: Visualizer | null = null;
 const visualizerDomElement = <HTMLDivElement>document.getElementById('visualizer');
 const generateNewBarsButton = <HTMLButtonElement>document.getElementById('generate-bars')
@@ -78,44 +83,33 @@ const enableResetButton = (): void => {
 }
 
 // Running the sorts
-const runBubbleSort = (): void => {
-  if (visualizer) {
+const getAlgorithm = ({ algorithmName }: { algorithmName: String }): Function | null => {
+  switch (algorithmName) {
+    case BUBBLE_SORT_NAME:
+      return bubbleSort
+    case MERGE_SORT_NAME:
+      return mergeSort
+    case QUICK_SORT_NAME:
+      return quickSort
+    case SELECTION_SORT_NAME:
+      return selectionSort
+    default:
+      return null
+  }
+}
+
+const runSort = ({ algorithmName }: { algorithmName: String }) => {
+  const algorithm = getAlgorithm({ algorithmName })
+  if (visualizer && algorithm) {
     visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
-    alert("Visualizer is null")
-  }
-}
-
-const runMergeSort = (): void => {
-  if (visualizer) {
-    visualizer.sort({ algorithm: mergeSort, callback: enableResetButton });
-    setSortingCapability({ allowSorting: false });
-  } else {
-    alert("Visualizer is null")
-  }
-}
-
-const runQuickSort = (): void => {
-  if (visualizer) {
-    visualizer.sort({ algorithm: quickSort, callback: enableResetButton });
-    setSortingCapability({ allowSorting: false });
-  } else {
-    alert("Visualizer is null")
-  }
-}
-
-const runSelectionSort = (): void => {
-  if (visualizer) {
-    visualizer.sort({ algorithm: selectionSort, callback: enableResetButton });
-    setSortingCapability({ allowSorting: false });
-  } else {
-    alert("Visualizer is null")
+    console.log("We've had a problem :/")
   }
 }
 ///////////////////////////////////////////////////
 
-// DOM setup
+// Front end viewing options
 const setMaxBars = () => {
   const width = window.innerWidth;
   const maxBars = Math.floor(width / 3);
@@ -213,6 +207,7 @@ const toggleBarButtons = ({ canGenerateBars }: { canGenerateBars: boolean }): vo
     resetBarsButton?.removeAttribute("hidden");
   }
 }
+//////////////////////////////////////////////////////////////
 
 // Writes the metrics to the screen
 const writeMetric = ({ metric, metricClassName, metricTitle }: { metric: number | null, metricClassName: string, metricTitle: string }): void => {
@@ -242,10 +237,10 @@ darkModeToggle?.addEventListener("click", (e) => setDarkMode(e));
 slider.addEventListener("mouseup", (e) => setSortDelay(e));
 slider.addEventListener("touchend", (e) => setSortDelay(e));
 
-document.getElementById('bubble-sort')?.addEventListener("click", () => runBubbleSort());
-document.getElementById('merge-sort')?.addEventListener("click", () => runMergeSort());
-document.getElementById('quick-sort')?.addEventListener("click", () => runQuickSort());
-document.getElementById('selection-sort')?.addEventListener("click", () => runSelectionSort());
+document.getElementById('bubble-sort')?.addEventListener("click", () => runSort({ algorithmName: BUBBLE_SORT_NAME }));
+document.getElementById('merge-sort')?.addEventListener("click", () => runSort({ algorithmName: MERGE_SORT_NAME }));
+document.getElementById('quick-sort')?.addEventListener("click", () => runSort({ algorithmName: QUICK_SORT_NAME }));
+document.getElementById('selection-sort')?.addEventListener("click", () => runSort({ algorithmName: SELECTION_SORT_NAME }));
 document.getElementById('sort-speed')?.addEventListener("input", () => setSpeedDescription(slider, speedDescription));
 
 // Set the max number of bars based on the screen width
