@@ -120,7 +120,7 @@ export default class Visualizer {
     this.sortDelay = sortDelay;
   }
 
-  sort = ({ algorithm, callback }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction, callback: Function }): void => {
+  sort = ({ algorithm, callback }: { algorithm: PartitionBasedSortFunction | TranspositionSortFunction, callback: () => void }): void => {
     const args = {
       bars: this.bars,
       startingIndex: 0,
@@ -130,6 +130,8 @@ export default class Visualizer {
 
     algorithm(args).then(() => {
       callback()
-    });
+    }).catch(_error => {
+      console.log("The running algorithm has encountered an error")
+    })
   }
 }

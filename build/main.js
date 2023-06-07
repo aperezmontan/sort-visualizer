@@ -91,7 +91,7 @@ const getAlgorithm = ({ algorithmName }) => {
 const runSort = ({ algorithmName }) => {
     const algorithm = getAlgorithm({ algorithmName });
     if (visualizer && algorithm) {
-        visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
+        visualizer.sort({ algorithm, callback: enableResetButton });
         setSortingCapability({ allowSorting: false });
     }
     else {

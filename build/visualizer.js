@@ -83,6 +83,8 @@ export default class Visualizer {
             };
             algorithm(args).then(() => {
                 callback();
+            }).catch(_error => {
+                console.log("The running algorithm has encountered an error");
             });
         };
         this.maxBars = maxBars || 0;

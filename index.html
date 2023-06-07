@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- TODO: see how we might be able to inject this at deploy time so we can use live-server locally but protect ourselves in the wild -->
+  <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sort Visualizer 👀</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="assets/images/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100;200&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="visualizer">
+    <div class="button-bar">
+      <div class="generate-bars-container">
+        <button id="generate-bars">Generate New Bars</button>
+        <button id="reset-bars" hidden>Reset</button>
+      </div>
+      <div class="sort-buttons-container">
+        <button id="bubble-sort">Bubble Sort</button>
+        <button id="merge-sort">Merge Sort</button>
+        <button id="quick-sort">Quick Sort</button>
+        <button id="selection-sort">Selection Sort</button>
+      </div>
+      <div class="options-container">
+        <div class="dark-mode-container">
+          <input class="dark-mode-toggle" type="checkbox" id="dark-mode" checked autocomplete="off">
+          <label class="dark-mode-label" for="dark-mode"></label>
+        </div>
+        <div class="sort-speed-section">
+          <div class="sort-speed-title">Sort Speed</div>
+          <div class="sort-speed-container">
+            <input type="range" min="1000" max="2000" value="1500" class="slider" id="sort-speed" autocomplete="off">
+            <output class="speed-description" id="sort-speed-description">Normal</output>
+          </div>
+        </div>
+      </div>
+      <!-- DEV METRICS
+      <div class="window-width"></div>
+      <div class="max-bars"></div>
+      <div class="total-bars"></div> -->
+    </div>
+    <div class="visualizer-container"></div>
+    <!-- TODO: see if making this a Canvas will make it any prettier -->
+    <!-- <canvas id="canvas-container"></canvas> -->
+  </div>
+  <script src="build/main.js" type="module" defer></script>
+  <script src="build/visualizer.js" type="module" defer></script>
+  <script src="build/sorts.js" type="module" defer></script>
+  <!-- <script src="js/canvas.js" defer></script> -->
+</body>
+</html>

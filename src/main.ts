@@ -14,10 +14,10 @@ const darkModeToggle = <HTMLInputElement>document.getElementById('dark-mode');
 const slider = <HTMLInputElement>document.getElementById('sort-speed');
 const speedDescription = <HTMLOutputElement>document.getElementById('sort-speed-description');
 
-const debounce = (callback: Function, delay: number = 300): Function => {
+const debounce = (callback: () => void, delay = 300): () => void => {
   let timeout: ReturnType<typeof setTimeout>;
 
-  return (...args: any[]): void => {
+  return (...args: Event[]): void => {
     clearTimeout(timeout);
     timeout = setTimeout(() => callback.apply(args), delay);
   };
@@ -83,7 +83,7 @@ const enableResetButton = (): void => {
 }
 
 // Running the sorts
-const getAlgorithm = ({ algorithmName }: { algorithmName: String }): Function | null => {
+const getAlgorithm = ({ algorithmName }: { algorithmName: string }): typeof bubbleSort | typeof mergeSort | typeof quickSort | typeof selectionSort | null => {
   switch (algorithmName) {
     case BUBBLE_SORT_NAME:
       return bubbleSort
@@ -98,10 +98,10 @@ const getAlgorithm = ({ algorithmName }: { algorithmName: String }): Function | 
   }
 }
 
-const runSort = ({ algorithmName }: { algorithmName: String }) => {
+const runSort = ({ algorithmName }: { algorithmName: string }): void => {
   const algorithm = getAlgorithm({ algorithmName })
   if (visualizer && algorithm) {
-    visualizer.sort({ algorithm: bubbleSort, callback: enableResetButton });
+    visualizer.sort({ algorithm, callback: enableResetButton });
     setSortingCapability({ allowSorting: false });
   } else {
     console.log("We've had a problem :/")
@@ -110,7 +110,7 @@ const runSort = ({ algorithmName }: { algorithmName: String }) => {
 ///////////////////////////////////////////////////
 
 // Front end viewing options
-const setMaxBars = () => {
+const setMaxBars = (): void => {
   const width = window.innerWidth;
   const maxBars = Math.floor(width / 3);
 

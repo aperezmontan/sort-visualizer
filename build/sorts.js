@@ -47,8 +47,8 @@ export const bubbleSort = async ({ bars, visualizer }) => {
 const arrayRange = (start, stop, step = 1) => Array.from({ length: (stop - start) / step + 1 }, (_value, index) => start + index * step);
 // TODO: see if we can clean this up at all
 const merge = async ({ bars, startingIndex, pivot, endingIndex, visualizer }) => {
-    let leftArraySize = pivot - startingIndex + 1;
-    let rightArraySize = endingIndex - pivot;
+    const leftArraySize = pivot - startingIndex + 1;
+    const rightArraySize = endingIndex - pivot;
     // Create temp arrays
     const leftArray = new Array(leftArraySize);
     const rightArray = new Array(rightArraySize);
