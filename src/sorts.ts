@@ -76,18 +76,18 @@ interface MergeType extends SortParamsType {
 
 const arrayRange = (start: number, stop: number, step = 1) => Array.from(
   { length: (stop - start) / step + 1 },
-  (value, index) => start + index * step
+  (_value, index) => start + index * step
 );
 
 
 // TODO: see if we can clean this up at all
 const merge = async ({ bars, startingIndex, pivot, endingIndex, visualizer }: MergeType & { visualizer: Visualizer }): Promise<void> => {
-  let leftArraySize = pivot - startingIndex + 1;
-  let rightArraySize = endingIndex - pivot;
+  const leftArraySize = pivot - startingIndex + 1;
+  const rightArraySize = endingIndex - pivot;
 
   // Create temp arrays
-  const leftArray = new Array(leftArraySize);
-  const rightArray = new Array(rightArraySize);
+  const leftArray = new Array(leftArraySize) as BarType[];
+  const rightArray = new Array(rightArraySize) as BarType[];
   let leftArrayIndex = 0;
   let rightArrayIndex = 0;
 
