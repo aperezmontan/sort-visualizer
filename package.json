@@ -5,7 +5,7 @@
   "author": "Aristides Perez <aris.a.perez@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "parcel build src/index.html",
+    "build": "parcel build index.html",
     "dev": "yarn parcel serve index.html",
     "lint": "eslint src --ext .js,.ts,.jsx,.tsx",
     "test": "jest"
